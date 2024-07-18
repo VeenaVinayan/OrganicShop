@@ -1,0 +1,162 @@
+<%- include('userHeader') %>
+<%- include('userNavBar') %>
+<style>
+    .banner {
+      margin: 0 auto;
+      max-width: 1200px;
+      height: 200px;
+      background: linear-gradient(135deg, #333, #ddd);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+
+    .banner h1 {
+      font-size: 3rem;
+      margin: 0;
+      font-weight: bold;
+    }
+
+    .banner p {
+      font-size: 1.5rem;
+    }
+
+    .banner a {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: rgba(255, 255, 255, 0.3);
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 5px;
+    }
+
+    .banner a:hover {
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+  </style>
+<!-- ========================= SECTION MAIN ========================= -->
+<section class="section-intro padding-y-sm">
+<div class="container">
+
+<!-- <div class="intro-banner-wrap">
+	<img src="/shop/images/banners/1.jpg" class="img-fluid rounded">
+</div> -->
+
+<div class="container">
+    <div class="banner">
+      <div>
+        <h1>Organic Life!</h1>
+        <p>Embrace the goodness of organic food.</p>
+      </div>
+    </div>
+  </div>
+
+</div> <!-- container //  -->
+</section>
+<!-- ========================= SECTION MAIN END// ========================= -->
+
+<!-- ========================= SECTION  ========================= -->
+<section class="section-name padding-y-sm">
+<div class="container">
+
+<header class="section-heading">
+	<h3 class="section-title">Popular products</h3>
+</header>
+<div class="row" id="productGrid">
+<% product.forEach((row) =>{ %>
+   <div class="col-md-3">
+		<div class="card card-product-grid">
+			<a href="/productDetails/<%= row._id %>" class="img-wrap"> <img src="/images/productImages/<%= row.image[0] %>"> </a>
+			<figcaption class="info-wrap">
+             	<a href='/productDetails/<%= row._id %>'   class="title"><b><%= row.productName %></b></a>
+                <div class="price mt-1 d-flex row "> <%= row.varient[0].price %> <!-- price-wrap.// -->
+                 <a onclick="addToWhishlist(`<%= row._id %>`)" class="widget-header pl-3 ml-3"><img width="32" height="32" src="https://img.icons8.com/external-anggara-glyph-anggara-putra/32/external-wishlist-retail-anggara-glyph-anggara-putra-2.png" alt="external-wishlist-retail-anggara-glyph-anggara-putra-2"/></a> 
+               </div>
+             </figcaption>
+		</div>
+	</div> <!-- col.// -->
+<% }); %>	
+
+</div> <!-- row.// -->
+<div class="pagination-area mt-30 mb-50">
+	<nav aria-label="Page navigation example">
+	  <ul class="pagination justify-content-center">
+		<% if (currentPage > 1) { %>
+		   <li class="page-item"><a href="/?page=<%= currentPage - 1 %>" class="page-link text-dark">Previous</a></li>
+	    <% } %>
+	    <li class="page-item"><a href="/?page=<%= currentPage %>" class="page-link active"><%= currentPage %></a></li>
+	    <% if (currentPage < totalPages) { %>
+			<li><a href="/?page=<%= currentPage + 1 %>" class="page-link text-dark">Next</a></li>
+		<% } %>
+		</ul>
+	</nav>
+   </div>
+</div><!-- container // -->
+
+</section>
+<!-- ========================= SECTION  END// ========================= -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+<script>
+$(document).ready(function () {
+      function reloadContainer(id){
+          $.ajax({
+             url:`/shop/categoryProducts/${id}`,
+             method:'GET',
+             success : function (response){
+                 $('#productGrid').html(response);
+             },
+             error: function (xhr,status,error){ 
+                console.error('Ajax error' );
+             }
+       })
+      }
+ $('#catList').click(function(){
+     const id= document.getElementById('hiddenValue').value;
+     console.log('Inside click event' + id);
+     reloadContainer(id);
+})
+});
+
+function addToWhishlist(product){
+      console.log(" iNside Add to wishlist "+product);
+      $.ajax({
+           url:`/addToWishlist/${product}`,
+           method:'POST',
+           contentType:'application/json',
+           success: function(res){
+             Swal.fire({
+                   position: "top-end",
+                   icon: "success",
+                   title: " Wishlist !",
+                   text:res.message,
+                   showConfirmButton: false,
+                   timer: 1500
+               });
+           },
+           error:function(xhr,status,error){
+            Swal.fire({
+                   position: "top-end",
+                   icon: "error",
+                   title: "Failed To Add Wishlist !",
+                   text:error,
+                   showConfirmButton: false,
+                   timer: 1500
+               });
+            }
+      });
+      window.location.reload();
+}
+</script>
+      
+<%- include('footer') %>
+
+

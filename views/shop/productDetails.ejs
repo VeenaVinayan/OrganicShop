@@ -1,0 +1,332 @@
+<%- include('userHeader') %>
+<%- include('userNavBar') %>
+<style>
+    .radio-btn {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 5px;
+            border: 2px solid #3c3b3b;
+            border-radius: 10px;
+            cursor: pointer;
+            background-color: rgb(249, 244, 244);
+            transition: background-color 0.3s;
+        }
+        .radio-btn.active {
+            background-color: #a1a29d;
+            color: white;
+            border-color: #444546;
+        }
+</style>
+<div class="text-center ">
+<nav aria-label="breadcrumb" class="d-inline-block bg-light p-2">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/userShop">Home</a></li>
+    <li class="breadcrumb-item"><a href="/userShop"></a><%= product.category.catName %></li>
+    <li class="breadcrumb-item active" aria-current="page"><%= product.productName %></li>
+  </ol>
+</nav>
+</div>
+<section class="section-content padding-y bg">
+<div class="container">
+<!-- ============================ COMPONENT 1 ================================= -->
+<div class="alert alert-success" id="showMessage" role="alert" style="display: none;"></div>
+<div class="card">
+	<div class="row no-gutters">
+		<aside class="col-md-6">
+<article class="gallery-wrap"> 
+<div class="img-big-wrap" class="image-container">
+	   <a href="#"><img src="/images/productImages/<%= product.image[0] %>" id="mainImage"></a>
+</div> <!-- img-big-wrap.// -->
+</article> <!-- gallery-wrap .end// -->
+		  <img src="/images/productImages/<%= product.image[1] %>" class="thumbnail" onclick="changeImage('<%= product.image[1] %>')" style="width: auto; height: 100px; margin-inline: 10px; border: 1px solid rgb(193, 193, 193); border-radius: 15px;" alt="Product Images">
+		  <img src="/images/productImages/<%= product.image[2] %>" class="thumbnail" onclick="changeImage('<%= product.image[2] %>')" style="width: auto; height: 100px; margin-inline: 10px; border: 1px solid rgb(193, 193, 193); border-radius: 15px;" alt="Product Images">
+  </aside>
+        <main class="col-md-6 border-left">
+<article class="content-body">
+<h2 class="title"><%= product.brand %></h2>
+<h5 class="text-muted" id="pname"><%= product.productName %></h2>
+<% let first = product.varient[0] %>
+ <h6>Rating <img width="48" height="48" src="https://img.icons8.com/color/48/filled-star--v1.png" alt="filled-star--v1"/>
+       <%= product.rating %> </h6>
+<div class="mb-3"> 
+	<var class="price h4">
+    <% if(first.discount>0) { %>
+         <% let value = first.price - first.discount %> 
+         <img width="24" height="24" src="https://img.icons8.com/material-outlined/24/rupee.png" alt="rupee"/><s id="priceStrike"><%= first.price %></s><span>  </span><span><strong id="dprice"><%= value %></strong></span>
+    <% } else { %> 
+         <img width="24" height="24" src="https://img.icons8.com/material-outlined/24/rupee.png" alt="rupee"/> <strong><span id="price"><%= first.price %></span></strong>
+      <% } %>
+    </var>
+    </div> 
+ <p><%= product.description %></p>
+ <hr>
+	
+	<div class="row">
+		<div class="item-option-select">
+			<h6>Select Size</h6>
+			<div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons">
+        <div id="varientButtonGroup">
+          <% product.varient.forEach((index,i) => {  %>
+            <button class="radio-btn " onclick="varientSelect('<%= product._id %>','<%= index.size %>',this)"><%= index.size %></button>
+          <% }) %>
+        </div>
+       <input type="hidden" id="size" value="<%= first.size %>">
+       <% var varient=JSON.stringify(product.varient) %>
+       <% console.log(varient) %>
+       <input type="hidden" name="indexValue"  id="varientArray" value="<%= varient %>">
+			</div> 
+		</div>
+	</div> <!-- row.// -->
+	<hr>
+    <h6> Quantity <h6>
+    <div class="input-group mb-3 row ">
+        <button class="btn btn-outline-secondary"  type="button" id="minus-btn">-</button>
+        <input type="text" class="form-control text-center" value="1" id="quantity" readonly style="width:10px">
+        <button class="btn btn-outline-secondary" type="button" id="plus-btn">+</button>
+        <input type="hidden" value="<%= first.quantity %>" id="stock">
+      </div>
+      <% if(first.quantity > 0 )  {  %>
+      <h6 class="text-success" id="qtyh6"> In  Stock <span class="text-muted" id="qtyspan"><%= first.quantity %> Left </span><h6> 
+        
+      <% } else  { %>
+         <h6 class="text-danger" id="qtystock"> Out of stock </h6>
+      <%  }  %>  
+    <hr>
+	<a href="#" onclick="addToCart('<%= product._id %>')" class="btn  btn-secondary"> <span class="text">Add to cart</span> <i class="fas fa-shopping-cart"></i>  </a>
+  </article> <!-- product-info-aside .// -->
+		</main> <!-- col.// -->
+	</div> <!-- row.// -->
+</div> <!-- card.// -->
+<!-- ============================ COMPONENT 1 END .// ================================= -->
+
+<br>
+
+<div class="row">
+			<div class="col-md-9">
+
+	<header class="section-heading">
+		<h3 class="text-muted">Customer Reviews </h3>  
+		
+	</header>
+  <% if(product.review) { %> 
+	<article class="box mb-3">
+		<div class="icontext w-100">
+			<img src="" class="img-xs icon rounded-circle">
+			<div class="text">
+				<span class="date text-muted float-md-right"></span>  
+				<h6 class="mb-1"> </h6>
+				
+			</div>
+		</div> <!-- icontext.// -->
+		<div class="mt-3">
+			<p> </p>	
+		</div>
+	</article>
+    <% }  else { %> 
+       <p> No reviews Yet ! </p>
+	<% } %>
+
+	</div> <!-- col.// -->
+</div> <!-- row.// -->
+<div class="col-md-9">
+
+	<header class="section-heading">
+		<h3 class="text-muted">Similar Products </h3>  
+		
+	</header>
+
+ <div class="row">
+         <div class="col-md-3">
+            <div class="card card-product-grid">
+                <a href="#" class="img-wrap"> <img src=""> </a>
+                <figcaption class="info-wrap">
+                    <a href='#'   class="title"></a>
+                    <div class="price mt-1"></div> <!-- price-wrap.// -->
+                </figcaption>
+            </div>
+        </div> <!-- col.// -->
+    </div> <!-- row.// -->
+   
+</div> <!-- container .//  -->
+</section>
+<!-- ========================= SECTION CONTENT END// ========================= -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+    document.addEventListener("DOMContentLoaded", function() {
+    const thumbnails = document.querySelectorAll(".thumbnail");
+     thumbnails.forEach(function(thumbnail) {
+        thumbnail.addEventListener("click", function() {
+            // Get the src attribute of the clicked thumbnail
+            const newSrc = thumbnail.getAttribute("src");
+            
+            const mainImage = document.getElementById("mainImage");
+            const oldImage = mainImage.getAttribute("src");
+            // Change the src attribute of the main image to the clicked thumbnail's src
+            mainImage.setAttribute("src", newSrc);
+            thumbnail.setAttribute("src",oldImage);
+        });
+    });
+  
+ // zoom image
+     const zoomImage = document.getElementById("mainImage");
+     zoomImage.addEventListener("click", function() {
+        if (zoomImage.classList.contains("zoomed")) {
+            zoomImage.classList.remove("zoomed");
+        } else {
+            zoomImage.classList.add("zoomed");
+        }
+    });
+});
+// Product Quantity Validations.
+
+$(document).ready(function() {
+  const LIMIT= 5;
+  const stock = $('#stock').val();
+  console.log("stock = "+stock);
+  $("#plus-btn").click(function() {
+      var quantity = parseInt($("#quantity").val());
+      if(quantity ===  LIMIT){
+         Swal.fire({
+             icon:'warning',
+             text:`Customer limit reached ${LIMIT}`,
+             timer:2000,
+             showConfirmaButton : false,
+         }); 
+         return;
+      }
+      if(quantity>= stock){
+        Swal.fire({
+             icon:'warning',
+             text:`Exceding avilable stock  ${stock}`,
+             timer:3000,
+             showConfirmaButton : false,
+         }); 
+        return;
+      }
+     $("#quantity").val(quantity + 1);
+  });
+
+  $("#minus-btn").click(function() {
+    var quantity = parseInt($("#quantity").val());
+    if (quantity > 1) {
+      $("#quantity").val(quantity - 1);
+    }
+  });
+});
+//Add to cart
+function addToCart(product){
+     const qty = document.getElementById('quantity').value;
+     console.log('Inside Cart ' );
+     const size = document.getElementById('size').value;
+     console.log("Size :" + size);
+     const selected = selectedVarientQuantity(size);
+     console.log("Selected values", selected);
+     if(selected.quantity < 1){
+      Swal.fire({
+             icon:'warning',
+             text:`Stock is empty !! `,
+             timer:3000,
+             showConfirmaButton : false,
+         }); 
+      return;   
+     }
+    
+     fetch(`/addToCart?product=${product}&quantity=${qty}&size=${size}`,{method:'POST'}) 
+       .then(response => response.json())
+       .then(data => {
+          const displayDiv = document.getElementById('showMessage');
+          if(data.success) {
+              displayDiv.style.display = 'block';
+              displayDiv.innerHTML = data.message ;
+
+              location.href ="/viewcart"
+           }else {
+              displayDiv.style.display = 'block';
+              displayDiv.innerHTML = data.message ;
+          }
+       }) 
+  }
+function displayValue(){
+    console.log("Inside displayValue !! ");
+    document.getElementById('qtyspan').value =varient.quantity;
+}
+function addToWhishlist(product){
+      console.log(" iNside Add to wishlist "+product);
+      $.ajax({
+           url:`/addToWishlist/${product}`,
+           method:'POST',
+           contentType:'application/json',
+           success: function(res){
+             Swal.fire({
+                   position: "top-end",
+                   icon: "success",
+                   title: "Added to Wishlist !",
+                   text:res.message,
+                   showConfirmButton: false,
+                   timer: 2000
+               });
+           },
+           error:function(xhr,status,error){
+            Swal.fire({
+                   position: "top-end",
+                   icon: "error",
+                   title: "Failed To Add Wishlist !",
+                   text:error,
+                   showConfirmButton: false,
+                   timer: 2000
+               });
+            }
+      });
+    }
+function varientSelect(id, size, element) {
+    const buttons = document.querySelectorAll('.radio-btn');
+    buttons.forEach(button => {
+        button.classList.remove('active');
+    });
+    document.getElementById("size").value=size;
+    element.classList.add('active');
+
+    console.log("Selected Varient ::" + id + size);
+    const selected = selectedVarientQuantity(size);
+    console.log("Selected values", selected);
+
+    if (selected) {
+        console.log("Inside price change !!");
+
+        // Check if the priceStrike element exists
+        const priceStrikeElement = document.getElementById('priceStrike');
+        if (priceStrikeElement && selected.discount > 0) {
+            priceStrikeElement.innerHTML = selected.price;
+        }
+
+        // Check if the dprice element exists
+        const dpriceElement = document.getElementById('dprice');
+        if (dpriceElement && selected.discount > 0) {
+            dpriceElement.innerHTML = selected.price - selected.discount;
+        }
+
+        // Check if the price element exists
+        const priceElement = document.getElementById('price');
+        if (priceElement && selected.discount === 0) {
+            priceElement.innerHTML = selected.price;
+        }
+        const qtyspanElement = document.getElementById('qtyspan');
+        if (qtyspanElement) {
+            qtyspanElement.textContent = selected.quantity + " Left";
+        }
+    } else {
+        console.error("Selected variant not found.");
+    }
+}
+function selectedVarientQuantity(size){
+  console.log("INside selected varient Quantity !!");
+  const varientArray = JSON.parse(document.getElementById("varientArray").value);
+  // Select variant for selected size
+  const selected = varientArray.find(varient => varient.size === size);
+  console.log("Selected values", selected);
+  return selected;
+}
+
+</script>
+<%- include('footer') %>

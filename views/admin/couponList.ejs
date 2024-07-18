@@ -1,0 +1,95 @@
+<%- include('./includes/adminHead') %>
+<%- include('./includes/adminNavBar') %>
+
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Coupon </h2>
+            <p>Coupon  Details</p>
+        </div>
+        <div>
+            <a href="/coupon" class="btn btn-primary"><i class="text-muted material-icons md-post_add"></i>Create coupon</a>
+        </div>
+    </div>
+    <div class="card-body">
+    <div class="table-responsive">
+        <div class="table-responsive">
+            <table class="table align-middle table-nowrap mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" class="text-center">
+                            <div class="form-check align-middle">
+                                <input class="form-check-input" type="checkbox" id="transactionCheck01">
+                                <label class="form-check-label" for="transactionCheck01"></label>
+                            </div>
+                        </th>
+                        <th class="align-middle" scope="col">Coupon</th>
+                        <th class="align-middle" scope="col">Description</th>
+                        <th class="align-middle" scope="col">Value</th>
+                        <th class="align-middle" scope="col">Minimum Purchase</th>
+                        <th class="align-middle" scope="col">Maximum Amount</th>
+                        <th class="align-middle" scope="col">Status</th>
+                        <th class="align-middle" scope="col">Expiry Date</th>
+                        <th class="align-middle" scope="col">Action</th>
+                       </tr>
+                </thead>
+                <tbody>
+                  <% coupon.forEach((value) => { %>
+                    <tr>
+                        <td class="text-center">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="transactionCheck02">
+                                <label class="form-check-label" for="transactionCheck02"></label>
+                            </div>
+                        </td>
+                        <td><a href="#" class="fw-bold"><%= value.coupon %></a> </td>
+                        <td><%= value.description %></td>
+                        <td>
+                            <%= value.percentage %>
+                        </td>
+                        <td>
+                            <%= value.minimumAmount %>
+                        </td>
+                        <td>
+                            <%= value.maximumAmount %>
+                        </td>
+                        <td>
+                            <% if(value.isListed) { %> 
+                               <span class="badge badge-pill badge-soft-success">Avilable</span>
+                            <% } else { %> 
+                               <span class="badge badge-pill badge-soft-danger">Unavilable</span>
+                            <% } %> 
+                        </td>
+                        <td> <%= value.date %>  </td>
+                        <td class="d-flex flex-row">
+                            <a href="/editCoupon/<%= value._id %>"><img width="24" height="24" src="https://img.icons8.com/plumpy/24/edit--v1.png" alt="edit--v1"/></a>
+                            <button class="btn btn-primary" onclick="listCoupon('<%= value._id %>')">List</button>   
+                        
+                        </td>
+                     </tr>
+                   <% }) %>
+                  </tbody>
+                 </table>
+                </div>
+             </div>
+             <script>
+                function listCoupon(id){
+                    console.log("List Coupon !!");
+                    Swal.fire({
+                         icon:'warning',
+                         title:"Do you want to List Coupon !",
+                    }).then(result =>{
+                           if(result.isConfirmed){
+                              fetch(`/doCouponList/${id}`,{method:'PATCH'})
+                              .then(res =>{
+                                  Swal.fire("Successfully Delete Coupon !!");
+                                  window.location.reload();
+                              })
+                           } 
+                    });
+                }
+
+            </script>
+       <%- include('./includes/adminFooter.ejs') %>      
+
+

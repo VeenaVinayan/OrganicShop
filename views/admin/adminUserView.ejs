@@ -1,0 +1,120 @@
+<%- include('./includes/adminHead.ejs') %>
+<%- include('./includes/adminNavbar.ejs') %>
+
+<section class="content-main">
+  <div class="content-header">
+      <div>
+          <h2 class="content-title card-title">Customers </h2>
+          <p> View , Block or Unblock Customers</p>
+      </div>
+      <div>
+          <input type="text" placeholder="Search Here" class="form-control bg-white">
+      </div>
+  </div>
+   <div class="row col-md-10 col-lg-10">
+      <table class="table  m-4">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">Sl-No</th>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Mobile</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+        <% user.forEach((row) => {  %>
+        <tr>
+            <th><%= ++index %></th>
+            <td><%= row.name %></td>
+            <td><%= row.email %></td>
+            <td><%= row.mobile %></td>
+            <td>
+              <div id="button-container-<%user._id %>">
+               <% if(row.isBlock === false) { %>
+                <div>
+                     <button id="btnblockUser" class="btn btn-primary" onclick="confirmBlockUser('<%= row._id %>')"> Block </button>
+                </div>
+                <% } else { %> 
+                  <div>
+                     <button id="unblock-<%= row._id %>" class="btn btn-success" onclick="confirmUnblockUser('<%= row._id %>')">UnBlock</button> 
+                  </a>
+               </div>
+               <% } %>
+                </div>    
+            </td>   
+            </tr>      
+          <% }) %>      
+        </tbody>
+      </table>
+    </div>  
+    <div class="pagination-area mt-30 mb-50">
+      <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-start">
+     <% if( currentPage !== 1 ) { %> 
+           <li class="page-item active"><a  href="/adminUserView?page=1" class="page-link active">1</a></li>
+           <li class="page-item active"><a  href="/adminUserView?page=1" class="page-link active">1</a></li><li class="page-item active"><a  href="/adminUserView?page=1" class="page-link active">1</a></li><li class="page-item active"><a  href="/adminUserView?page=1" class="page-link active">1</a></li>
+     <% } %>
+     <% if( currentPage > 2 ) { %>
+       <li class="page-item ">
+         <a href="/adminUserView?page=<%= prevPage %> " class="page-link active"><%= prevPage %> </a> </li>
+     <% } %>
+       <li class="page-item ">
+       <a href="/adminUserView?page=<%= currentPage %> " class="page-link active"><%= currentPage %></a></li>
+     <% if( hasNextPage ) { %>
+      <li class="page-item ">
+        <a href="/adminUserView?page=<%= nextPage %> " class="page-link active" >  <%= nextPage %> </a></li> 
+     <% } %>    
+     <% if( nextPage !== lastPage && currentPage !== lastPage ) { %>
+      <li class="page-item ">
+         <a href="/adminUserView?page=<%= lastPage %>" class="page-link active" > <%= lastPage %></a> </li>
+     <% } %>
+        </ul>
+      </nav>
+     </div>
+  </section>
+  <script>
+        function confirmBlockUser(userId){
+           Swal.fire({
+              title : 'Block User',
+              text : 'Are you sure you want to block this user ?',
+              icon :'warning',
+              showCancelButton :true,
+              confirmButtonColor :'#d33',
+              cancelButtonColor :'#3085d6',
+              confirmButtonText :'Yes , block !' 
+          }).then((result) => {
+             if(result.isConfirmed){
+                    //fetch(`/blockUser/${userId}`,{method:'PATCH'}) Not working !!
+               fetch(`/blockUser?id=${userId}`,{method:'PATCH'})
+               .then(res => {
+                       Swal.fire("Successfully Block User!");
+                 }) ;
+               window.location.reload();              
+          }  
+            }).catch((err)=>{
+                console.log(err);
+          });
+      }
+   function confirmUnblockUser(userId){
+           Swal.fire({
+              title : 'Unblock User',
+              text : 'Are you sure you want to Unblock this user ?',
+              icon :'info',
+              showCancelButton :true,
+              confirmButtonColor :'#28a745',
+              cancelButtonColor :'#3085d6',
+              confirmButtonText :'Yes , Unblock !'
+          }).then((result) => {
+             if(result.isConfirmed){
+                  fetch(`/unBlockuser?id=${userId}`,{method:'PATCH'})
+                   .then(res => {
+                       Swal.fire("Successfully UnBlock User!");
+                 }) ;
+                 window.location.reload();
+           }
+          })
+      }
+  </script>
+
+<%- include('./includes/adminFooter.ejs') %>  

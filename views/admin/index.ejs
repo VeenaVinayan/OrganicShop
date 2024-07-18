@@ -1,0 +1,239 @@
+<%- include('./includes/adminHead.ejs') %>
+<%- include('./includes/adminNavbar.ejs') %>
+<style>
+    /* CSS to control the size of the chart */
+    #chart-container {
+        width: 300px;
+        height: 300px;
+        margin: 0 auto;
+    }
+    #paymentPieChart {
+        width: 100% !important;
+        height: 100% !important;
+    }
+    #barchat-container {
+        width: 100%;
+        max-width: 600px; /* Set a max width for better responsiveness */
+        margin: auto;
+    }
+    canvas {
+            width: 100% !important;
+            height: auto !important; /* Let the height be auto to maintain aspect ratio */
+        }
+</style>
+         
+        <section class="content-main">
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Dashboard </h2>
+                    <p>Whole data about your business here</p>
+                </div>
+                <div>
+                    <a href="/salesReport" class="btn btn-primary"><i class="text-muted material-icons md-post_add"></i>Create report</a>
+                </div>
+            </div>
+           
+            <div class="row">
+                <div class="col-xl-8 col-lg-12">
+                    <div class="card mb-4">
+                        <article class="card-body">
+                            <div class="radio-group text-center">
+                                <label>
+                                    <input type="radio" name="dataType" value="monthly" id="monthly" checked> Monthly
+                                </label>
+                                <label>
+                                    <input type="radio" name="dataType" value="yearly" id="yearly" > Yearly
+                                </label>
+                            </div>
+                            <h5 class="card-title">Sale statistics</h5>
+                            <div id="barChart-container" data-monthlyOrder="<%= monthlyOrder %>" data-yearlyOrder="<%= yearlyOrder %>">
+                                <canvas id="saleBarChart" ></canvas>
+                            </div>
+                        </article>
+                    </div>
+                 </div>
+                 <div class="card mb-4">
+                    <div id="paymentData" data-payment="<%= payment %>"></div>
+                    <article class="card-body">
+                        <h5 class="card-title">Payment Mode Statistics</h5>
+                        <div id="chart-container">
+                          <canvas id="paymentPieChart" height="200" width="100"></canvas>
+                        </div>
+                    </article>
+                </div>
+            </div>
+            <div class="row">
+                <h4 class="text-muted">Best Selling </h4>
+                <div class="col-md-4">
+                    <div class="card card-body mb-4">
+                         <article class="icontext">
+                            <span class="icon icon-sm rounded-circle bg-primary-light"><i class="text-primary material-icons md-monetization_on"></i></span>
+                            <div class="text">
+                                <h6 class="mb-1 card-title">Best Selling Product</h6>
+                                <span class="text-sm">
+                                <% product.forEach( value => { %>
+                                      <span><%= value.productDetails.productName %></span>
+                                <% }) %>
+                               </span>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-body mb-4">
+                        <article class="icontext">
+                            <span class="icon icon-sm rounded-circle bg-success-light"><i class="text-success material-icons md-local_shipping"></i></span>
+                            <div class="text">
+                                <h6 class="mb-1 card-title">Best Selling Category</h6>
+                                <span class="text-sm"></span>
+                                <% category.forEach( value => { %>
+                                        <span><%= value.categoryName %></span>
+                                <% }) %>
+                                </span>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-body mb-4">
+                        <article class="icontext">
+                            <span class="icon icon-sm rounded-circle bg-warning-light"><i class="text-warning material-icons md-qr_code"></i></span>
+                            <div class="text">
+                                <h6 class="mb-1 card-title">Best Selling Brand !</h6> <span></span>
+                                <span class="text-sm">
+                                <% brand.forEach( value => { %>
+                                    <span><%= value.brand %></span>
+                                <% }) %>
+                                    In 4 Categories
+                                </span>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div> 
+        </section> <!-- content-main end// -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>        
+<script>
+  let monthlyData,yearlyData;
+  const ctx = document.getElementById('saleBarChart').getContext('2d');
+  let chart;
+  function createPieChart(data) {
+            const ctx = document.getElementById('paymentPieChart').getContext('2d');
+            const paymentMode = data.map(item => item.paymentMode);
+            const total = data.map(item => item.total);
+            console.log(" INside chart making function "+paymentMode + total);
+            const chart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: paymentMode,
+                    datasets: [{
+                        data: total,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Payment Mode'
+                        }
+                    }
+                }
+            });
+
+        }
+        function createBarChart(data,isMonthly){
+             const labels = data.map(item => isMonthly ? item.month : item.year);
+                const values = data.map(item => item.total);
+
+                if (chart) {
+                    chart.destroy();
+                }
+                chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: isMonthly ? 'Total Payments (Monthly)' : 'Total Payments (Yearly)',
+                            data: values,
+                            backgroundColor: 'rgba(54, 170, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 205, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: isMonthly ? 'Monthly Payments' : 'Yearly Payments'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: isMonthly ? 'Months' : 'Years'
+                                },
+                                ticks: {
+                                    callback: function(value, index, ticks) {
+                                        return labels[index];
+                                    }
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Total Orders'
+                                },
+                                ticks: {
+                                    stepSize: isMonthly ? 4 : 10,
+                                    callback: function(value) {
+                                        return value ;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+        }
+        document.addEventListener('DOMContentLoaded',  () => {
+            // pie chat settings
+            const element = document.getElementById('paymentData');
+            const data = JSON.parse(element.getAttribute('data-payment'));
+            createPieChart(data);
+            //Bar chart settings
+            const orderElement = document.getElementById('barChart-container');
+             monthlyData =JSON.parse(orderElement.getAttribute('data-monthlyOrder'));
+            console.log("Monthly Data ::"+monthlyData);
+             yearlyData = JSON.parse(orderElement.getAttribute('data-yearlyOrder'));
+            createBarChart(monthlyData,true);
+           });
+           document.getElementById('monthly').addEventListener('click', () => {
+                createBarChart(monthlyData, true);
+            });
+           document.getElementById('yearly').addEventListener('click', () => {
+                createBarChart(yearlyData, false);
+            });
+</script>
+
+<%- include('./includes/adminFooter.ejs') %>

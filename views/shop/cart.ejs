@@ -1,0 +1,257 @@
+<%- include('userHeader') %>
+<%- include('userNavBar') %>
+
+<section class="section-content padding-y bg">
+<div class="container">
+
+<!-- ========================= COMPONENT 1 ============================ -->
+
+<div class="row">
+	<aside class="col-lg-9">
+<div class="card">
+ <% if(cart) { %> 
+	<% let grandTotal,discount %>
+	<%  grandTotal=discount =0 %> 
+	<% let total %>	
+<% let itemData =[] %>
+<table class="table table-borderless table-shopping-cart">
+<thead class="text-muted">
+<tr class="small text-uppercase">
+  <th>...</th>
+  <th scope="col">Product</th>
+  <th scope="col" width="120">Quantity</th>
+  <th scope="col" width="120">Size</th>
+  <th scope="col" width="120">Price</th>
+  <th scope="col" width="120">Total</th>
+  <th scope="col" width="100">Action</th>
+</tr>
+</thead>
+<tbody>
+
+ <% cart.items.forEach((row,index) => {  %> 
+<tr>
+    <td>
+		<figure class="itemside align-items-center">
+			<div class="aside text-muted"><%= ++index %></div>
+		</figure>	
+	</td>
+	<td>
+	     <figcaption class="info">
+		  <a href="#" class="title text-dark"></a>
+		  <p class="p"><%= row.product.productName %></p>
+	    </figcaption>
+	</td>
+	<td> 
+		<!-- col.// -->
+		     		<div class="col"> 
+						<div class="input-group input-spinner">
+							<div class="input-group-prepend">
+							<button class="btn btn-light" type="button" id="button-minus"  onclick="subQuantity('<%= row.product._id %>','<%= row.size %>','<%= index %>')"><i class="fa fa-minus"></i> </button>
+							</div>
+							<input type="text" class="form-control"  value="<%= row.quantity %>" name="quantity" id="qtyInp<%= index %>" readonly>
+							<div class="input-group-append">
+							<button class="btn btn-light" type="button" id="button-plus" onclick="addQuantity('<%= row.product._id %>','<%= row.size %>','<%= index %>')"> <i class="fa fa-plus"></i> </button>
+							</div>
+						</div> <!-- input-group.// -->
+					</div> <!-- col.// -->
+	</td>
+	<td>
+		<figcaption class="info">
+		  <a href="#" class="title text-dark"></a>
+		  <p class="p"><%= row.size %></p>
+	    </figcaption>
+	</td>
+	<td>
+		<figcaption class="info">
+		  <a href="#" class="title text-dark"></a>
+		  <% row.product.varient.forEach((val) =>  { %> 
+			 <% if(val.size === row.size ){ %>
+                 <%= val.price %> 
+		</figcaption>
+	</td>
+	<td> 
+		<div class="price-wrap" > 
+			<% discount  += (val.discount * row.quantity) %> 
+			<% total= (val.price *  row.quantity) %> 
+			<% grandTotal += total %>
+		    <span id="total<%= index %>"><%= total %></span>	
+		</div> <!-- price-wrap .// -->
+	</td>
+	<% } %>
+    <% }) %>
+	<td class="text-right"> 
+	<a onclick="deleteCartItem('<%= row.product._id %>','<%= row.size %>','<%= index %>')"><img width="24" height="24" src="https://img.icons8.com/material-sharp/24/filled-trash.png" alt="filled-trash"/></a>
+	</td>
+</tr>
+<% }) %>
+</tbody>
+</table>
+
+</div> <!-- card.// -->
+
+	</aside> <!-- col.// -->
+	<aside class="col-lg-3">
+	<div class="card">
+		<div class="card-body">
+			<dl class="dlist-align">
+			  <dt>Total price:</dt>
+			  <dd class="text-right" id="grandTotal"><%= grandTotal  %></dd>
+			</dl>
+			<dl class="dlist-align">
+			  <dt>Discount </dt>
+			  <dd class="text-right" id="discount"> <%= discount %> </dd>
+			</dl>
+			<% grandTotal -= discount %>
+			<dl class="dlist-align">
+			  <dt>Total:</dt>
+		      <dd class="text-right text-dark b" ><strong id="netAmount"><%=  grandTotal %></strong></dd>
+			</dl>
+			<hr>
+			<a href="/checkOut/<%= cart.user %>" class="btn btn-primary btn-block"> Checkout </a>
+			<a href="/" class="btn btn-light btn-block">Continue Shopping</a>
+		</div> <!-- card-body.// -->
+		</div> <!-- card.// -->
+
+</aside> <!-- col.// -->
+
+<% }else { %> 
+      <h3 class="text-muted text-center text-danger"> Your cart is Empty !!</h3>
+<% } %>
+
+</div> <!-- row.// -->
+<!-- ============================ COMPONENT 1 END .// ================================= -->
+
+</div> <!-- container .//  -->
+</section>
+<!-- ========================= SECTION CONTENT END// ========================= -->
+<script>
+	  const LIMIT = 5 ;
+	  const btnAdd = document.getElementById('button-plus');
+	  const btnSub = document.getElementById('button-minus');
+	  let grandTotal = document.getElementById('grandTotal');
+	  let discount = document.getElementById('discount');
+	  let netAmount = document.getElementById('netAmount');
+// function to add qunatity by one   
+	function addQuantity(product,varient,index){
+		console.log("Inside Increment  index is !!"+index);
+	
+		let inpName='qtyInp'+index; 
+		
+		const quantity = document.getElementById(inpName);
+		let qtyValue = quantity.value;
+		let totalId = 'total'+index;
+		
+		let total = document.getElementById(totalId);
+    	qtyValue ++;
+	   if (qtyValue > LIMIT) {
+			qtyValue--;
+			Swal.fire({
+  					icon: "error",
+ 					title: "Oops...",
+ 					text: "Customer Limit Exceeding...",
+ 			});
+		return;
+		}
+		$.ajax({
+					url :`/increaseCartQuantity/?product=${product}&size=${varient}`,
+					method:'PATCH',
+					contentType: 'application/json',
+					success : function(response){
+						console.log("INside Succesfully Incremant ");
+						total.textContent = (response.price + parseInt(total.textContent));
+					    grandTotal.textContent = (response.price + parseInt(grandTotal.textContent));
+						discount.textContent = (response.discount + parseInt(discount.textContent));
+           			    netAmount.textContent =parseInt(netAmount.textContent)+(response.price-response.discount);
+						quantity.value=qtyValue;
+					},
+					 error: function(xhr,status,error){
+                        Swal.fire("Stock Empty !! ", "", "error")
+					 }
+		});
+		
+     }
+	 //Decrement quantity by one
+	  function subQuantity(product,size,index){
+		console.log("Inside Decrement ||");
+		
+		let inpName='qtyInp'+index; 
+		const quantity = document.getElementById(inpName);
+		let qtyValue = quantity.value;
+		let totalId = 'total'+index;
+		console.log("Total field value "+totalId);
+		let total = document.getElementById(totalId);
+	    console.log(`Product value :-----Size ::${total.textContent} `)
+		qtyValue--;
+        if(qtyValue >= 1){
+			quantity.value=qtyValue;
+			console.log("Inside else ::",qtyValue);
+		 }else{
+			Swal.fire({
+  				icon: "error",
+  				title: "Oops...",
+ 				text: "Are you sure to delete item from Cart Use Delete Button !!",
+			});
+		  return ;
+		 }
+		 console.log("Before Ajax call  ||");
+		 $.ajax({
+					url :`/decreaseCartQuantity/?product=${product}&size=${size}`,
+					method:'PATCH',
+					contentType: 'application/json',
+					success : function(response){
+						console.log("INside Succesfully Delete Item ");
+						console.log(`Discount :: ${response.discount} ---Price :: ${response.price}`);
+			 			console.log(" Before add Value is ::"+total.textContent);
+					    total.textContent = (parseInt(total.textContent) - response.price);
+					    console.log("Value is ::"+total.textContent);
+    			        grandTotal.textContent = (parseInt(grandTotal.textContent)- response.price );
+                        discount.textContent = (parseInt(discount.textContent) - response.discount);
+           			    netAmount.textContent =parseInt(netAmount.textContent) - (response.price+response.discount);	
+						quantity.value=qtyValue;
+					 },
+					error: function(xhr,status,error){
+                        Swal.fire("Stock Empty !! ", "", "error"); 
+					}
+		});
+		
+	}
+	  function deleteCartItem(pid,size,index){
+		 Swal.fire({
+ 				 title: "Do you want to delete item from the cart ?",
+ 				 showCancelButton: true,
+                 confirmButtonText: "Yes",
+             }).then((result) => {
+                console.log("Inside Delete cart Item !!"+pid);
+			    let inpName='qtyInp'+index; 
+				console.log("Input field value "+inpName);
+				const quantity = document.getElementById(inpName).value;
+               if (result.isConfirmed) {
+				$.ajax({
+					 url :`/removeCartItem/?id=${pid}&size=${size}&quantity=quantity`,
+					 method:'PATCH',
+					 contentType: 'application/json',
+					 success : function(response){
+						Swal.fire(response.message, "", "success"); 
+					 },
+					 error: function(xhr,status,error){
+                        Swal.fire("Error occured !! ", "", "error"); 
+					 }
+				});
+                
+          } else if (result.isDenied) {
+             Swal.fire("Item does't Removed!! ", "", "info");
+          }
+		  window.location.reload();
+        });
+	  }
+
+    function findSizeQuantity(size,varient){
+		console.log("INside Function !!");
+		let value = varient.find( value => size === value.size);
+		console.log("Quantity ::"+value.quantity);
+		return size.quantity;
+	}
+
+</script>
+
+<%- include('footer') %>

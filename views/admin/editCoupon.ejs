@@ -1,0 +1,104 @@
+<%- include('./includes/adminHead') %>
+<%- include('./includes/adminNavBar') %>
+
+         <section class="content-main">
+            <div class="row">
+                <div class="col-9">
+                    <div class="content-header">
+                        <h2 class="content-title">Edit Coupon</h2>
+                        
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                  <form action="/saveEditCoupon" method="post" name="couponForm"  onsubmit="return validateCouponForm()" >
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <label for="product_title" class="form-label">Coupon Name</label>
+                                <input type="hidden" name="id" value="<%= coupon._id %>">
+                                <input type="text" class="form-control" id="couponName" name="coupon" value="<%= coupon.coupon %>">
+                                <div id="errorName" role="alert" class="alert-danger" style="display: none;"></div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="product_title" class="form-label">Coupon Description</label>
+                                <input type="text" class="form-control" id="couponDescription" name="description" value="<%= coupon.description %>">
+                                <div id="errorDescription" role="alert" class="alert-danger" style="display: none;"></div>
+                            </div>
+                            <div class="row gx-3">
+                                <div class="col-md-6  mb-3">
+                                    <label for="product_sku" class="form-label">Discount Percentage</label>
+                                    <input type="number" class="form-control" name="percentage" id="percent" value="<%= coupon.percentage %>">
+                                    <div id="errorPercentage" role="alert" class="alert-danger" style="display: none;"></div>
+                                </div>
+                                <div class="col-md-6  mb-3">
+                                    <label for="product_color" class="form-label">Minimum Purchase Amount</label>
+                                    <input type="number" class="form-control" id="minimumAmount" name="minimumAmount" value="<%= coupon.minimumAmount %>">
+                                    <div id="errorMinimumAmount" role="alert" class="alert-danger" style="display: none;"></div>
+                                </div>
+                                <div class="col-md-6  mb-3">
+                                    <label for="product_size" class="form-label">Maximum discount Amount</label>
+                                    <input type="number"class="form-control" id="maximumAmount" name="maximumAmount" value="<%= coupon.maximumAmount %>">
+                                    <div id="maximumAmount" role="alert" class="alert-danger" style="display: none;"></div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="product_brand" class="form-label">Expiry Date</label>
+                                    <input type="date" value="<%= moment(coupon.expiryDate).format('YYYY-MM-DD') %>" class="form-control" id="expiry" name="expiryDate">
+                                    <div id="errorExpiryDate" role="alert" class="alert-danger" style="display: none;"></div>
+                                </div>
+                            </div>
+                             <div>
+                                <input type="submit" class="btn btn-md rounded font-sm hover-up" value="SAVE">
+                            </div>
+                         </form>
+                        </div>
+                    </div> <!-- card end// -->
+               </div>
+            </div>
+          </section>
+          <script>
+             function validateCouponForm(){
+                  let isVaild = true;
+                  console.log("INside Validation!! ");
+                  const name=document.getElementById('couponName').value.trim();
+                  const description =document.getElementById('couponDescription').value.trim();
+                  const percetage = document.getElementById('percentage').value.trim();
+                  const purchaseMinimum = document.getElementById('minimumAmount').value.trim();
+                  const maximumAmount = document.getElementById('maximumAmount').value.trim();
+                  const date = document.getElementById('expiryDate').value.trim();
+                  const exp =/^[a-zA-Z0-9]+$/;
+                  const expAlphabets = /^[a-zA-Z]$/
+                  if(name === "" || exp.test(name)){ 
+                      displayErrorMessage(errorName,"Name field Error!");
+                      console.log(name);
+                      isVaild=false;
+                  }
+                  if(description === " " || expAlphabets.test(description)){
+                      displayErrorMessage(errorDescription,"Description field Error !");
+                      isValid=false;
+                  }
+                  if(purchaseMinimum === " " || expAlphabets.test(description)){
+                      displayErrorMessage(errorMinimumAmount,"Purchase minimum amount field Error !");
+                      isValid=false;
+                  }
+                  if(percentage === " "){
+                      displayErrorMessage(errorPerentage,"Percentage field Error !");
+                      isValid=false;
+                  }
+                  if(maximumAmount === " "){
+                      displayErrorMessage(errorMaximumAmount,"Maximum Amount field Error !");
+                      isValid=false;
+                  }
+                  if(date === " " ){
+                      displayErrorMessage(errorExpiryDate,"Expiry Date field Error !");
+                      isValid=false;
+                  } 
+                return isVaild;
+             }
+             function displayErrorMessage(id,message){
+                 const element = document.getElementById(id);
+                 id.style.display='block';
+                 id.innerHTML=message;
+             }
+          </script>
+
+    <%- include('./includes/adminFooter') %>

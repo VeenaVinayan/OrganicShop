@@ -1,0 +1,234 @@
+<%- include('userHeader') %>
+<%- include('userNavBar') %>
+
+<!-- ========================= SECTION CONTENT ========================= -->
+<section class="section-conten padding-y bg">
+
+<div class="container">
+	<div class="row">
+	<aside class="col-md-3">
+		<!--   SIDEBAR   -->
+		<ul class="list-group">
+			<a class="list-group-item active" href="/userProfile">My Profile </a>
+			<a class="list-group-item" href="/editUserProfile">Edit Profile </a>
+	    	<a class="list-group-item" href="/userOrder">Orders</a>
+		</ul>
+		<br>
+		<a class="btn btn-light btn-block" href="/logout"> <i class="fa fa-power-off"></i> <span class="text">Log out</span> </a> 
+		<!--   SIDEBAR .//END   -->
+	</aside>
+	<main class="col-md-9">
+		<article class="card">
+		<header class="card-header">
+			<h2 class="d-inline-block mr-3">Profile Overview </h2>
+			 <% if(message.success) { %>
+				<div role="alert" class="alert alert-success">
+					<%= message.success %>
+				</div>
+				<% } %>
+		</header>
+		<div class="card-body">
+			<div class="row mb-4">
+				<div class="col-md-3">
+				  <div data-mdb-input-init class="form-outline">
+					<label class="form-label" for="form11Example1">Name </label>
+				  </div>
+				</div>
+				<div class="col-md-3">
+				  <div data-mdb-input-init class="form-outline">
+				 	<label class="form-label" ><%= userData.name %></label>
+				  </div>
+				</div>
+			  </div>
+			  <div class="row mb-4">
+				<div class="col-md-3">
+				  <div data-mdb-input-init class="form-outline">
+					<label class="form-label" for="form11Example1">Email </label>
+				  </div>
+				</div>
+				<div class="col-md-3">
+				  <div data-mdb-input-init class="form-outline">
+				 	<label class="form-label" for="form11Example2"><%= userData.email %></label>
+				  </div>
+				</div>
+			  </div>
+			  <div class="row mb-4">
+				<div class="col-md-3">
+				  <div data-mdb-input-init class="form-outline">
+					<label class="form-label" >Phone Number </label>
+				  </div>
+				</div>
+				<div class="col-md-3">
+				  <div data-mdb-input-init class="form-outline">
+				 	<label class="form-label"><%= userData.mobile %></label>
+				  </div>
+				</div>
+			  </div>
+			  <div class="row mb-4">
+				<div class="col-md-4">
+				  <div data-mdb-input-init class="form-outline">
+						<label class="form-label" >Address</label>
+					  </div>
+					</div>
+					<div class="col-md-4">
+					  <div data-mdb-input-init class="form-outline">
+					   <% address.forEach((row) =>  {  %> 	 
+							<p> 
+								  <%= row.firstName + " " + row.lastName %> <br>
+								  <%= row.house %> <br>
+								  <%= row.landMark %> 
+								  <%= row.street %> 
+								  <%= row.palce %> <br>
+								  <%= row.city %> <br>
+								  <%= row.state %> <br>
+								  <%= row.country %> <br> 
+								  <%= row.mobile %>
+								  <a href="/editAddress/<%= userData._id %>/<%= row._id %>"><img width="24" height="24" src="https://img.icons8.com/plumpy/24/edit--v1.png" alt="edit--v1"/></a>
+							</p>
+						 </div>  
+					    </div>
+					   <% }) %>
+				    <div class="col-sm-3 text-center">
+						<button class="btn btn-secondary" onclick="displayAddress()">ADD MORE</button>
+					</div> 
+					 </div>
+				</div>
+		</article> <!-- order-group.// --> 
+		 <!-- Address block -->
+		<div id="addressBox" style="display: none;" >
+			<div class="container my-5 py-5">
+
+				<!--Section: Design Block-->
+				<section>
+					<div class="col-md-8 mb-4">
+					  <div class="card mb-4">
+						<div class="card-header py-3">
+						  <h5 class="mb-0 text-font text-uppercase"> Address</h5>
+						</div>
+						<div class="card-body">
+						  <form action="/saveAddress" method="post">
+			  				<div class="row mb-4">
+							  <div class="col">
+								<div data-mdb-input-init class="form-outline">
+								  <input type="text" id="inpFirstName" class="form-control" name="fname" required />
+								  <label class="form-label" for="form11Example1">First name</label>
+								</div>
+							  </div>
+							  <div class="col">
+								<div data-mdb-input-init class="form-outline">
+								  <input type="text" id="inpLastName" name="lname" class="form-control" required />
+								  <label class="form-label" for="form11Example2">Last name</label>
+								  <input type="hidden" value="<%= userData._id %>" name="userId">
+								</div>
+							  </div>
+							</div>
+			            	<div data-mdb-input-init class="form-outline mb-4">
+								<input type="number" id="inpPhone" class="form-control"name="phone" required />
+								<label class="form-label" for="form11Example6">Phone</label>
+							</div>
+							 <!-- Radio Button Selection of TYPE -->
+							 <label class="form-label" for="form11Example6"> Address Type </label>
+							  <div data-mdb-input-init class="form-outline mb-4 p-2 form-grop d-flex row">
+							  <div class="form-check ">
+								<input class="form-check-input" type="radio" name="type" id="exampleRadios1" value="Home" checked>
+								<label class="form-check-label" for="exampleRadios1">
+								  Home
+								</label>
+							  </div>
+							  <div class="form-check">
+								<input class="form-check-input" type="radio" name="type" id="exampleRadios2" value="Office">
+								<label class="form-check-label" for="exampleRadios2">
+								  Office
+								</label>
+							  </div>
+							  <div class="form-check">
+								<input class="form-check-input" type="radio" name="type" id="rbOther" value="Other">
+								<label class="form-check-label" for="exampleRadios3">
+								  Other
+								</label>
+							  </div>    
+                            </div>
+							<!-- Text input -->
+							<div data-mdb-input-init class="form-outline mb-4">
+							  <input type="text" id="inpHouse" class="form-control" name="house" required/>
+							  <label class="form-label" for="form11Example3">House Name</label>
+							</div>
+							<div class="row mb-4">
+								<div class="col">
+								  <div data-mdb-input-init class="form-outline">
+									<input type="text" id="inpLandMark" name="landMark" class="form-control" />
+									<label class="form-label" for="form11Example1">Land Mark</label>
+								  </div>
+								</div>
+								<div class="col">
+								  <div data-mdb-input-init class="form-outline">
+									<input type="text" id="inpStreet" name="street" class="form-control" />
+									<label class="form-label" for="form11Example2">Street</label>
+								  </div>
+								</div>
+							  </div>
+							<!-- Text input -->
+							<div class="row mb-4">
+								<div class="col">
+								  <div data-mdb-input-init class="form-outline">
+									<input type="text" id="form11Example1" name="place" class="form-control"  required/>
+									<label class="form-label" for="form11Example1">Place</label>
+								  </div>
+								</div>
+								<div class="col">
+								  <div data-mdb-input-init class="form-outline">
+									<input type="text" id="form11Example2" name="city" class="form-control" required/>
+									<label class="form-label" for="form11Example2">City</label>
+								  </div>
+								</div>
+							  </div>
+							  <div class="row mb-4">
+								<div class="col">
+								  <div data-mdb-input-init class="form-outline">
+									<input type="text" id="form11Example1" name="pincode" class="form-control" required />
+									<label class="form-label" for="form11Example1">Pincode</label>
+								  </div>
+								</div>
+								<div class="col">
+								  <div data-mdb-input-init class="form-outline">
+									<input type="text" id="form11Example2" name="state" class="form-control" required />
+									<label class="form-label" for="form11Example2">State</label>
+								  </div>
+								</div>
+							  </div>
+							  <div class="row mb-4">
+								<div class="col">
+								  <div data-mdb-input-init class="form-outline">
+									<input type="text" id="form11Example1" name="country" class="form-control"  required/>
+									<label class="form-label" for="form11Example1">Country</label>
+								  </div>
+								</div>
+							  </div>
+			     			<!-- Checkbox -->
+							<!-- <div class="form-check d-flex justify-content-center mb-2">
+							  <input class="form-check-input me-2" type="checkbox" value="" id="form11Example8" checked />
+							</div> -->
+						</div>
+						<div class="text-center">
+							<input type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-secondary col-sm-12" value="Save Address"/>
+						</div>
+				      </form>
+					</div>
+				</div>
+ 			  </div>
+    		</section>
+			<!--Section: Design Block-->
+	 	  </div>
+		</div>
+	</main>
+</div> <!-- row.// -->
+</div>
+</section>
+		
+<!-- ========================= SECTION CONTENT END// ========================= -->
+<script>
+	function displayAddress(){
+		 document.getElementById('addressBox').style.display="block";
+	}
+</script>
+<%- include('footer') %>

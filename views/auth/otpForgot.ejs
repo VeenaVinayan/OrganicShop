@@ -1,0 +1,111 @@
+<%- include('../admin/includes/adminHead') %>
+<body>
+    <main>
+        <header class="main-header style-2 navbar">
+            <div class="col-brand">
+                <a href="index.html" class="brand-wrap">
+                    <img src="/images/logo-new.png" class="logo" alt="Organic Life">
+                </a>
+            </div>
+            <div class="col-nav">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link btn-icon" href="#">
+                            <i class="material-icons md-notifications animation-shake"></i>
+                            <span class="badge rounded-pill">3</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn-icon darkmode" href="#"> <i class="material-icons md-nights_stay"></i> </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="requestfullscreen nav-link btn-icon"><i class="material-icons md-cast"></i></a>
+                    </li>
+                    <li class="dropdown nav-item">
+                        <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownLanguage" aria-expanded="false"><i class="material-icons md-public"></i></a>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownLanguage">
+                            <a class="dropdown-item text-brand" href="#"><img src="assets/imgs/theme/flag-us.png" alt="English">English</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </header>
+       <section class="content-main mt-80 mb-80">
+        <div class="card mx-auto card-login">
+            <div class="card-body">
+                <h4 class="card-title mb-4">OTP Verification </h4>
+                <%  if(message.error) { %>
+                    <div class="alert alert-danger" role="alert">
+                       <%= message.error %>
+                    </div>
+                <% } %>
+                <div class="alert alert-danger" role="alert" id="error" style="display: none;"></div>
+            <form action="/otpForgotPassword" method="post"></form> 
+                <div class="mb-3">
+                    <input class="form-control" placeholder="Input OTP " type="number" name="otp" required="" id="otp">
+                    <div id="timer">1:00</div>
+                </div> <!-- form-group// -->
+                <div class="mb-4 btn-sm">
+                    <button onclick="validateOtp()" class="btn btn-primary  m-4 hover-up"> Validate </button>
+                </div> <!-- form-group// -->
+            </form>
+     </section>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+    let seconds = 60;
+    let timerInterval;
+    document.addEventListener('DOMContentLoaded',()=>{
+        startTimer();
+    });
+   
+    function updateTimer() {
+        const timerElement = document.getElementById('timer');
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        timerElement.textContent = `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+    }
+    function startTimer() {
+        updateTimer();
+            timerInterval = setInterval(() => {
+            seconds--;
+            if (seconds < 0) {
+                clearInterval(timerInterval);
+                Swal.fire("Time Out!");
+                document.getElementById('resend').style.display="block";
+            } else{
+                updateTimer();
+            }
+        }, 1000);
+    }
+    function stopTimer(){
+         clearInterval(timerInterval);  
+    }
+    function validateOtp(){
+         const value= document.getElementById('otp').value.trim();
+         console.log("INside validate ::"+value);
+         fetch(`/validateOtp/${encodeURIComponent(value)}`,{method:'POST'})
+           .then(response => response.json())
+           .then(data =>{
+                if(data.success){
+                  console.log("Otp correct !!"+data.userID)  
+                  stopTimer();
+                  Swal.fire({
+                      title: " CONGRATS !",
+                      text: "Successfully submit OTP !",
+                      icon: "success",
+                      timer:2000
+                  }).then(() =>{
+                    window.location.href=`/resetPassword/${data.userID}`;
+                 })
+                }else{
+                    console.log("Inside Error part !!");
+                    let message = document.getElementById('error');
+                    message.style.display="block";
+                    message.innerHTML ="Invalid OTP !";
+                  //  window.location.href='/forgetPassword';
+                }
+               
+            })
+        }
+
+    </script>

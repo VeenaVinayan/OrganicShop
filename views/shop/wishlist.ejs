@@ -1,0 +1,86 @@
+<%- include('userHeader') %>
+<%- include('userNavBar') %>
+
+<section class="section-content padding-y bg">
+    <div class="container">
+
+      <% if(!list) { %>
+         <h1 class="mb-4 text-success text-muted" role="alert">Your Wishlist is Empty !! </h1>
+       <% } else { %>
+        <table class="table table-sm">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Product</th>
+                <th scope="col">Price</th>
+                <th scope="col">Action</th>
+              </tr>
+             
+            </thead>
+            <tbody>
+             <% list.items.forEach((row,index) => { %> 
+              <tr>
+                <th><%= ++index %> </th>
+                <th scope="row"><%= row.product.productName %></th>
+                <td><%= row.product.varient[0].price %></td>
+                <td><button onclick="addToCart('<%= row.product._id %>','<%= row.product.varient[0].size %>')" class="btn btn-secondary text-white">Add to Cart</button></td>
+                <td><a onclick="deleteWishlist('<%= row.product._id %>')"><img width="24" height="24" src="https://img.icons8.com/material-two-tone/24/filled-trash.png" alt="filled-trash"/></a></td>
+              </tr>
+              <% }) %>
+            </tbody> 
+          </table>   
+    <% } %>
+</div>
+<script>
+    async function deleteWishlist(id){
+         console.log("INside Wishlist delete :: "+id);
+         try{
+            const response = await fetch(`/deleteWishlist/${id}`,
+                        {method:'PATCH',
+                            headers:{'content-Type':'application/json'}
+                        });
+                if(response.ok){
+                     const res = await response.json();
+                     Swal.fire({
+                                title: "Deleted from Wishlist !",
+                                text: "Successfully Deleted!",
+                                icon: "success",
+                                timer:2000,
+                            });
+                }else{
+                    Swal.fire({
+                                title: "Error !",
+                                text: "Deletion Failure !",
+                                icon: "error",
+                                timer:2000,
+                            });
+
+                }  
+              window.location.reload();     
+         }catch(err){
+            console.log('Error !!');
+         }
+    }
+    function addToCart(product,size){
+     console.log('Inside Add To Cart!! ' +product +size );
+     fetch(`/addToCart?product=${product}&quantity=${1}&size=${size}`,{method:'POST'}) 
+       .then(response => response.json())
+       .then(data => {
+          if(data.success) {
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Successfullt added to Cart !",
+                showConfirmButton: false,
+                timer: 2500
+            });
+           deleteWishlist(product);
+           }else {
+            Swal.fire(error.message,"",info); 
+         }
+       }) 
+  }
+
+</script>
+
+<%- include('footer') %>

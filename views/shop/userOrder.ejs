@@ -1,0 +1,112 @@
+<%- include('userHeader') %>
+<%- include('userNavBar') %>
+
+<!-- ========================= SECTION CONTENT ========================= -->
+<section class="section-conten padding-y bg">
+
+<div class="container">
+	<div class="row">
+	<aside class="col-md-3">
+		<!--   SIDEBAR   -->
+		<ul class="list-group">
+			<a class="list-group-item active" href="/userProfile">My Profile </a>
+			<a class="list-group-item" href="/editUserProfile">Edit Profile </a>
+		  <a class="list-group-item" href="/userOrder">Orders</a>
+		</ul>
+		<br>
+		<a class="btn btn-light btn-block" href="/logout"> <i class="fa fa-power-off"></i> <span class="text">Log out</span> </a> 
+		<!--   SIDEBAR .//END   -->
+	</aside>
+	<main class="col-md-9">
+		<article class="card">
+		<header class="card-header">
+			<h2 class="d-inline-block mr-3">Orders Overview </h2>
+			 <% if(message.success) { %>
+				<div role="alert" class="alert alert-success">
+					<%= message.success %>
+				</div>
+				<% } %>
+    </header>
+        <% if(!order) { %>
+              <h3 class="text-muted">No orders yet</h3>
+         <% } else { %>
+        <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">No</th>
+                <th scope="col">Date</th>
+                <th scope="col">Order-ID</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Status</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+            <% order.forEach((row) => { %> 
+              <tr>
+                <th scope="row"><%= ++index %></th>
+                <td><%= moment(row.date).format('DD-MM-YYYY') %></td>
+                <td><%= row._id %></td>
+                <td><%= row.amount %></td>
+                <td><%= row.status %></td>
+                <% if(row.status !=='Delivered' && row.status !== 'Shipped' && row.status !== 'Cancelled' && row.status !== 'Return') { %>
+                   <td><a onclick="cancelOrder('<%= row._id %>')"><button class="btn btn-danger">Cancel</button> </td></a>
+                <% } %>
+                  <td><a href="/viewOrderDetails/<%= row._id %>"><button class="btn btn-secondary">View</button> </td></a>
+              </tr>
+              <% }) %>  
+            </tbody>
+          </table>
+         <% } %> 
+         <div class="pagination-area mt-30 mb-50">
+          <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+             <% if( currentPage !== 1 ) { %> 
+               <li class="page-item active">
+              <a  href="/userOrder?page=1" class="page-link active">1</a></li>
+            <% } %>
+            <% if( currentPage > 2 ) { %>
+             <li class="page-item ">
+             <a href="/userOrder?page=<%= prevPage %> " class="page-link active"><%= prevPage %> </a> </li>
+            <% } %>
+             <li class="page-item ">
+             <a href="/userOrder?page=<%= currentPage %> " class="page-link active"><%= currentPage %></a></li>
+            <% if( hasNextPage ) { %>
+             <li class="page-item ">
+             <a href="/userOrder?page=<%= nextPage %> " class="page-link active" >  <%= nextPage %> </a></li> 
+            <% } %>    
+           <% if( nextPage !== lastPage && currentPage !== lastPage ) { %>
+             <li class="page-item ">
+             <a href="/userOrder?page=<%= lastPage %>" class="page-link active" > <%= lastPage %></a> </li>
+           <% } %>
+          </ul>
+         </nav>
+        </div>
+        <script>
+          function cancelOrder(oid){
+              console.log("Inside cancel order !"+ oid);
+              Swal.fire({
+                    title: "Do you want to cancel the order ?",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes",
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  $.ajax({
+                          url :`/cancelOrder/${oid}`,
+                          method:'PATCH',
+                          contentType : 'application/json',
+                          success : function(res){
+                            Swal.fire(res.message, "", "success");
+                           },
+                           error : function(xhr,status,error){
+                             Swal.fire(error.message, "", "info");
+                            }
+                  });
+               } else if (result.isDenied) {
+                Swal.fire("Changes are not saved", "", "info");
+              }
+           });
+          }
+         </script>
+
+         <%- include('footer') %>

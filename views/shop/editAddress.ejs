@@ -1,0 +1,154 @@
+<%- include('userHeader') %>
+<%- include('userNavBar') %>
+
+<section class="section-conten padding-y bg">
+
+    <div class="container">
+        <div class="row">
+        <aside class="col-md-3">
+            <!--   SIDEBAR   -->
+            <ul class="list-group">
+                <a class="list-group-item active" href="/userProfile">My Profile </a>
+                <a class="list-group-item" href="/editUserProfile">Edit Profile </a>
+                <a class="list-group-item" href="/usesrOrder">Orders</a>
+            </ul>
+            <br>
+            <a class="btn btn-light btn-block" href="/logout"> <i class="fa fa-power-off"></i> <span class="text">Log out</span> </a> 
+            <!--   SIDEBAR .//END   -->
+        </aside>
+        <main class="col-md-9">
+            <article class="card">
+            <header class="card-header">
+                <h2 class="d-inline-block mr-3"> Edit Address </h2>
+                <span></span>
+            </header>
+            <section>
+                <div class="col-md-8 mb-4">
+                  <div class="card mb-4">
+                    <div class="card-header py-3">
+                      <h5 class="mb-0 text-font text-uppercase"> Address</h5>
+                     
+                    </div>
+                    <div class="card-body">
+                      <form action="/saveEditAddress" method="post">
+                          <div class="row mb-4">
+                          <div class="col">
+                            <div data-mdb-input-init class="form-outline">
+                              <input type="text" id="inpFirstName" class="form-control" name="fname" value="<%= address.firstName %>" required />
+                              <label class="form-label" for="form11Example1">First name</label>
+                              <input type="hidden" name="addId" value="<%= address._id %>" >
+                              <input type="hidden" name="userId" value="<%= address.userId %>">
+                            </div>
+                          </div>
+                          <div class="col">
+                            <div data-mdb-input-init class="form-outline">
+                              <input type="text" id="inpLastName" name="lname" class="form-control" value="<%= address.lastName %>" required />
+                              <label class="form-label" for="form11Example2">Last name</label>
+                             </div>
+                          </div>
+                        </div>
+                        <div data-mdb-input-init class="form-outline mb-4">
+                            <input type="text" id="inpPhone" class="form-control"name="phone" value="<%= address.mobile %>" required />
+                            <label class="form-label" for="form11Example6">Phone</label>
+                        </div>
+                         <!-- Radio Button Selection of TYPE -->
+                         <label class="form-label" for="form11Example6"> Address Type </label>
+                         <div data-mdb-input-init class="form-outline mb-4 p-2 form-grop d-flex row">
+                         <div class="form-check ">
+                            <input class="form-check-input" type="radio" name="type" id="exampleRadios1" value="Home" checked>
+                            <label class="form-check-label" for="exampleRadios1">
+                              Home
+                            </label>
+                          </div>
+                          <div class="form-check">
+                            <input class="form-check-input" type="radio" name="type" id="exampleRadios2" value="Office">
+                            <label class="form-check-label" for="exampleRadios2">
+                              Office
+                            </label>
+                          </div>
+                          <div class="form-check">
+                            <input class="form-check-input" type="radio" name="type" id="rbOther" value="Other">
+                            <label class="form-check-label" for="exampleRadios3">
+                              Other
+                            </label>
+                          </div>    
+                        </div>
+                        <!-- Text input -->
+                        <div data-mdb-input-init class="form-outline mb-4">
+                          <input type="text" id="inpHouse" class="form-control" name="house" value="<%= address.house %>" required/>
+                          <label class="form-label" for="form11Example3">House Name</label>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col">
+                              <div data-mdb-input-init class="form-outline">
+                                <input type="text" id="inpLandMark" name="landMark" class="form-control" value="<%= address.landMark %>"/>
+                                <label class="form-label" for="form11Example1">Land Mark</label>
+                              </div>
+                            </div>
+                            <div class="col">
+                              <div data-mdb-input-init class="form-outline">
+                                <input type="text" id="inpStreet" name="street" class="form-control" value="<%= address.street %>"/>
+                                <label class="form-label" for="form11Example2">Street</label>
+                              </div>
+                            </div>
+                          </div>
+                        <!-- Text input -->
+                        <div class="row mb-4">
+                            <div class="col">
+                              <div data-mdb-input-init class="form-outline">
+                                <input type="text" id="form11Example1" name="place" class="form-control" value="<%= address.place %>" required/>
+                                <label class="form-label" for="form11Example1">Place</label>
+                              </div>
+                            </div>
+                            <div class="col">
+                              <div data-mdb-input-init class="form-outline">
+                                <input type="text" id="form11Example2" name="city" class="form-control" value="<%= address.city %>" required/>
+                                <label class="form-label" for="form11Example2">City</label>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row mb-4">
+                            <div class="col">
+                              <div data-mdb-input-init class="form-outline">
+                                <input type="text" id="form11Example1" name="pincode" class="form-control" value="<%= address.pincode %>" required />
+                                <label class="form-label" for="form11Example1">Pincode</label>
+                              </div>
+                            </div>
+                            <div class="col">
+                              <div data-mdb-input-init class="form-outline">
+                                <input type="text" id="form11Example2" name="state" class="form-control" value="<%= address.state %>" required />
+                                <label class="form-label" for="form11Example2">State</label>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row mb-4">
+                            <div class="col">
+                              <div data-mdb-input-init class="form-outline">
+                                <input type="text" id="form11Example1" name="country" class="form-control" value="<%= address.country %>"  required/>
+                                <label class="form-label" for="form11Example1">Country</label>
+                              </div>
+                            </div>
+                          </div>
+                         <!-- Checkbox -->
+                        <!-- <div class="form-check d-flex justify-content-center mb-2">
+                          <input class="form-check-input me-2" type="checkbox" value="" id="form11Example8" checked />
+                        </div> -->
+                    </div>
+                    <div class="text-center">
+                        <input type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-secondary col-md-3" value="Save Address"/>
+                    </div>
+                </form>
+                  </div>
+                </form>
+             </div>
+           </div>
+        </section>
+        <!--Section: Design Block-->
+       </div>
+    </div>
+</main>
+</div> <!-- row.// -->
+</div>
+</section>  
+
+<%-include('footer') %>

@@ -1,0 +1,197 @@
+<%- include('./includes/adminHead.ejs') %>
+<%- include('./includes/adminNavbar.ejs') %>
+<section class="content-main">
+        <div class="content-header">
+               <div>
+                    <h2 class="content-title card-title">Order detail</h2>
+                    <p>Details for Order ID: <%= order._id %></p>
+                     <input type="hidden" id="oid" value="<%= order._id %>">
+                </div>
+                <div>
+                    <h2 class="content-title card-title">Delivered Date </h2>
+                    <p>Date Delivered: <%= order.deliveredDate %></p>
+                </div>
+            </div>
+            <div class="card">
+                <header class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6 col-md-6 mb-lg-0 mb-15">
+                            <span>
+                                <i class="material-icons md-calendar_today"></i> <b><%= moment(order.date).format('DD-MM-YYYY') %></b>
+                            </span> <br>
+                            <small class="text-muted"><%= order._id %></small>
+                        </div>
+                        <div class="col-lg-6 col-md-6 ms-auto text-md-end">
+                            <select class="form-select d-inline-block mb-lg-0 mb-15 mw-200" id="status"  <% if(order.status === 'Cancelled' || order.status === 'Delivered' || order.status === 'Failed Payment'){ %> disabled <% } %>>
+                                <option value="<%= order.status %>"><%= order.status %></option>
+                                <option value="Cancelled">Cancelled </option>
+                                <option value="Confirmed">Confirmed</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="Delivered">Delivered</option>
+                            </select>
+                            <!-- <a class="btn btn-primary" href="#">Save</a>
+                            <a class="btn btn-secondary print ms-2" href="#"><i class="icon material-icons md-print"></i></a> -->
+                        </div>
+                    </div>
+                </header> <!-- card-header end// -->
+                <div class="card-body">
+                    <div class="row mb-50 mt-20 order-info-wrap">
+                        <div class="col-md-4">
+                            <article class="icontext align-items-start">
+                                <span class="icon icon-sm rounded-circle bg-primary-light">
+                                    <i class="text-primary material-icons md-person"></i>
+                                </span>
+                                <div class="text">
+                                    <h6 class="mb-1">Customer</h6>
+                                    <p class="mb-1">
+                                        <%= order.address.firstName+ " "+order.address.lastName %>  <br>  <%= order.address.mobile %>
+                                    </p>
+                                    <a href="#">View profile</a>
+                                </div>
+                            </article>
+                        </div> <!-- col// -->
+                        <div class="col-md-4">
+                            <article class="icontext align-items-start">
+                                <span class="icon icon-sm rounded-circle bg-primary-light">
+                                    <i class="text-primary material-icons md-local_shipping"></i>
+                                </span>
+                                <div class="text">
+                                    <h6 class="mb-1">Order info</h6>
+                                    <p class="mb-1">
+                                        Shipping: Blue Dart <br> Pay method: COD <br> Status: new
+                                    </p>
+                                </div>
+                            </article>
+                        </div> <!-- col// -->
+                        <div class="col-md-4">
+                            <article class="icontext align-items-start">
+                                <span class="icon icon-sm rounded-circle bg-primary-light">
+                                    <i class="text-primary material-icons md-place"></i>
+                                </span>
+                                <div class="text">
+                                    <h6 class="mb-1">Deliver to</h6>
+                                    <p class="mb-1">
+                                        <%= order.address.city %>  <br><%= order.address.house %> <br> 
+                                        <%= order.address.street %> <br> <%= order.address.landMark %>
+                                         Po Box  <%= order.address.pincode %>
+                                    </p>
+                                    <a href="#">View profile</a>
+                                </div>
+                            </article>
+                        </div> <!-- col// -->
+                    </div> <!-- row // -->
+                    <div class="row">
+                        <div class="col-lg-7">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th width="40%">Product</th>
+                                            <th width="20%">Unit Price</th>
+                                            <th width="20%">Quantity</th>
+                                            <th width="20%" class="text-end">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% order.items.forEach((row) => { %> 
+                                        <tr>
+                                            <td>
+                                                <a class="itemside" href="#">
+                                                    <div class="left">
+                                                        <img src="/images/productImages/<%= row.product.image[0] %>" width="40" height="40" class="img-xs" alt="Item">
+                                                    </div>
+                                                    <div class="info"> <%= row.product.productName %>, <%= row.size %> </div>
+                                                </a>
+                                            </td>
+                                            <td> <%= row.price %> </td>
+                                            <td> <%= row.quantity %> </td>
+                                            <td class="text-end"> <%= row.total %></td>
+                                        </tr>
+                                        <% }) %>
+                                       
+                                        <tr>
+                                            <td colspan="4">
+                                                <article class="float-end">
+                                                    <dl class="dlist">
+                                                        <dt>Subtotal:</dt>
+                                                        <dd><%= order.grandTotal %></dd>
+                                                    </dl>
+                                                    <dl class="dlist">
+                                                        <dt>Discount:</dt>
+                                                        <dd><%= order.totalDiscount %></dd>
+                                                    </dl>
+                                                    <% if(order.coupon) { %> 
+                                                     <hr>
+                                                     <dl class="dlist">
+                                                        <dt>Coupon:</dt>
+                                                        <dd><%= order.coupon %></dd>
+                                                    </dl>
+                                                    <dl class="dlist">
+                                                        <dt>Coupon Discount:</dt>
+                                                        <dd><%= order.couponDiscount %></dd>
+                                                    </dl>  
+                                                    <hr>
+                                                    <% } %>
+                                                    <dl class="dlist">
+                                                        <dt>Grand total:</dt>
+                                                        <dd> <b class="h5"><%= order.amount %></b> </dd>
+                                                    </dl>
+                                                    <dl class="dlist">
+                                                        <dt class="text-muted">Status:</dt>
+                                                    <% if(order.payStatus) { %> 
+                                                        <dd>
+                                                            <span class="badge rounded-pill alert-success text-success">Payment done</span>
+                                                        </dd>
+                                                    <% } else if(order.status === "Cancelled") { %> 
+                                                        <dd>
+                                                            <span class="badge rounded-pill alert-danger text-danger ">CANCELLED</span>
+                                                        </dd>
+                                                    <% } else { %> 
+                                                            <dd>
+                                                                <span class="badge rounded-pill alert-danger text-danger ">Payment Pending</span>
+                                                            </dd>
+                                                    <% } %>     
+                                                    </dl>
+                                                </article>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div> <!-- table-responsive// -->
+                           
+                        </div> <!-- col// -->
+                        <div class="col-lg-1"></div>
+                        <div class="col-lg-4">
+         <script>
+             const status = document.getElementById('status');
+             status.addEventListener('change', function(event){
+                   console.log("INside fun Change status !! ");
+                   const value = event.target.value;
+                   const id= document.getElementById('oid').value;
+                   console.log("Order ::"+id);
+                   Swal.fire({
+                        title: "Do you want to change status?",
+                        showCancelButton: true,
+                        confirmButtonText: "Save",
+                    }).then((result) => {
+                    if(result.isConfirmed) {
+                         $.ajax({
+                             url:`/changeStatus?status=${encodeURIComponent(value)}&oid=${encodeURIComponent(id)}`,
+                             method:'PATCH',
+                             contentType:'application/json',
+                             success:function(response){
+                                if(response.status === 'success'){
+                                    Swal.fire(responsne.message, "", "success");
+                                }
+                                window.location.reload();
+                            },
+                            error:function(xhr,status,error){
+                                Swal.fire("Error occured !"," ", "error"); 
+                            }  
+                         });
+                      } 
+                    });
+                }); 
+        </script>
+       
+       <%- include('./includes/adminFooter') %> 

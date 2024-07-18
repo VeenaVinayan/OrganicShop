@@ -1,0 +1,76 @@
+<body>
+  <div class="screen-overlay"></div>
+  <aside class="navbar-aside" id="offcanvas_aside">
+      <div class="aside-top">
+          <a href="/adminHome" class="brand-wrap">
+              <img src="/images/newLogo.png" class="logo" alt="Organic Life Dashboard">
+          </a>
+          <div>
+              <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button>
+          </div>
+      </div>
+      <nav>
+          <ul class="menu-aside">
+              <li class="menu-item active">
+                  <a class="menu-link" href="/adminHome"> <i class="icon material-icons md-home"></i>
+                      <span class="text">Dashboard</span>
+                  </a>
+              </li>
+              <li class="menu-item has-submenu">
+                  <a class="menu-link" href="#"> <i class="icon material-icons md-shopping_bag"></i>
+                      <span class="text">Products</span>
+                  </a>
+                  <div class="submenu">
+                      <a href="/product">Product List</a>
+                      <a href="/addProductView">Add Product</a>
+                  </div>
+              </li>
+              <li class="menu-item ">
+                  <a class="menu-link" href="/category"> <i class="icon material-icons md-shopping_bag"></i>
+                      <span class="text">Categories</span>
+                  </a>
+              </li>
+              <li class="menu-item ">
+                  <a class="menu-link" href="/adminUserView"> <i class="icon material-icons md-person"></i>
+                      <span class="text">Customers</span>
+                  </a>
+              </li>
+              
+            
+              <li class="menu-item">
+                  <a class="menu-link" href="/viewCustomerOrder"> <i class="icon material-icons md-comment"></i>
+                      <span class="text">Orders</span>
+                  </a>
+              </li>
+              <li class="menu-item">
+                  <a class="menu-link" href="/couponList"> <i class="icon material-icons md-stars"></i>
+                      <span class="text">Coupon</span> </a>
+              </li>
+              <li class="menu-item">
+                  <a class="menu-link" disabled href="/salesReport"> <i class="icon material-icons md-pie_chart"></i>
+                      <span class="text">Report</span>
+                  </a>
+              </li>
+          </ul>
+          <hr>
+        </nav>
+  </aside>
+  <!-- Header section -->
+  <main class="main-wrap">
+    <header class="main-header navbar justify-content-end">
+        <div class="col-nav align-right">
+          <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside"> <i class="material-icons md-apps"></i> </button>
+          <ul class="nav">
+              <li class="nav-item">
+                  <a class="nav-link btn-icon darkmode" href="#"> <i class="material-icons md-nights_stay"></i> </a>
+              </li>
+              <li class="dropdown nav-item">
+                  <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false"> <img class="img-xs rounded-circle" src="assets/imgs/people/avatar2.jpg" alt="User"></a>
+                  <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
+                    <div class="dropdown-divider"></div>
+                      <a class="dropdown-item text-danger" href="/logout"><i class="material-icons md-exit_to_app"></i>Logout</a>
+                  </div>
+              </li>
+          </ul>
+      </div>
+    </header>

@@ -1,0 +1,478 @@
+<%- include('./includes/adminHead.ejs') %>
+<%- include('./includes/adminNavbar.ejs') %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
+<style>
+    .image-item img { max-width: 150px; }
+    .image-item { position: relative; margin: 10px; }
+    .image-item button { position: absolute; top: 5px; right: 5px; }
+     #cropArea img { width: 100%; height: auto; }
+    .modal-body { padding: 0; }
+    .form-section { padding: 15px; }
+</style>
+<section class="content-main">
+    <div class="content-header row">
+        <div class="col-md-6 col-sm-4">
+            <h2 class="content-title card-title">Edit Product</h2>
+        </div>
+    </div>
+    <div class="row"> 
+        <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                   <div id="errorContainer" class="alert alert-danger" style="display: none;"></div>
+                    <form id="productForm" class="form" action="/editProductSubmit" method="POST" enctype="multipart/form-data" onsubmit="return validateProductForm()">
+                        <div class="row">
+                            <div class="col-md-6 form-section">
+                                <h4 class="card-title">Product Features</h4>
+                                <!-- Add your product basic data fields here -->
+                                <!-- Example fields -->
+                                 <input type="hidden" name="productId" value="<%= product._id %>">
+                                <div class="form-group">
+                                    <label for="productName">Product Name</label>
+                                    <input type="text" class="form-control" id="productName" name="productName" value="<%= product.productName %>" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="productDescription">Product Description</label>
+                                    <textarea class="form-control" id="description" name="description" rows="4" required><%= product.description %></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail3">Category</label>
+                                    <select id="category" class="form-control" name="categoryId" >
+                                        <% for (let cat of category) { %>
+                                            <% if (product.category.toString() === cat._id.toString()) { %>
+                                                <option selected value="<%= cat._id %>"><%= cat.catName %></option>
+                                            <% } else { %>
+                                                <option value="<%= cat._id %>"><%= cat.catName %></option>
+                                            <% } %>    
+                                        <% } %> 
+                                    </select>
+                                    <div id="errorCategory" class="alert-danger" style="display: none;"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label name='lblbrand'>Brands</label>
+                                    <input type="text" class="form-control" id="brand" name="brand" value="<%= product.brand %>" required>
+                                    <div id="errorBrand" class="alert-danger" style="display: none;"></div>
+                                </div>
+        <h4><label >Product size variants</label></h4>
+         <div id="variantContainer">   
+            <input type="hidden" id="varientArray" value="<%= JSON.stringify(product.varient) %>">    
+            <% product.varient.forEach((variant, index) => { %>  
+            <div class="form-group">
+                <div class="row align-items-end varient-row">
+                    <div class="form-group col-3">
+                        <label class="form-label">Price</label>
+                        <input type="number" class="form-control" name="price[]" value="<%= variant.price %>" >
+                    </div>
+                    <div class="form-group col-2">
+                        <label class="form-label">Size</label>
+                        <input type="text" class="form-control" name="size[]" value="<%= variant.size %>" >
+                    </div>
+                    <div class="form-group col-2">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" class="form-control" name="quantity[]" value="<%= variant.quantity %>" >
+                    </div>
+                    <div class="form-group col-2">
+                        <label class="form-label">Discount</label>
+                        <input type="text" class="form-control" name="discount[]" value="<%= variant.discount %>" >
+                    </div>
+                    <div class="form-group col-auto">
+                        <label class="form-label">Actions</label>
+                        <div class="d-flex">
+                            <a onclick="deleteVarient(this)">
+                                <img width="24" height="24" src="https://img.icons8.com/material/24/filled-trash.png" alt="filled-trash"/>
+                            </a>
+                        </div>
+                    </div>
+                </div> 
+            </div> 
+            <% }) %> 
+        </div>
+        <button type="button" class="btn btn-primary m-2" data-toggle="modal" data-target="#variantModal">
+            Add Variant
+        </button>
+        <input type="hidden" name="variantArray" id="variant" >
+         <div class="form-group col-4">
+                <label name="rating">Rating</label>
+                <input type="number" class="form-control" id="exampleInputRating" name="rating" value="<%= product.rating %>" required>
+                <div id="errorRating" class="alert-danger" style="display: none;"></div>
+         </div>  
+     </div>
+                        <div class="col-md-6 form-section">
+                            <h4 class="card-title">Product Image</h4>
+                            <div class="row">
+                                <% for (let img of product.image) { %>
+                                    <div class="col-md-3">
+                                        <div class="edit-images" style="display: flex; flex-direction: column; justify-content: center;">
+                                            <div>
+                                                <img src="/images/productImages/<%= img %>" style="width: auto; height: 100px; margin-inline: 10px; border: 1px solid rgb(193, 193, 193); border-radius: 15px;" alt="Product Images">
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            </div>
+                                <div class="form-group">
+                                    <label for="fileInput">Image</label>
+                                    <div class="input-group col-xs-12">
+                                        <input id="fileInput" type="file" name="image" multiple class="form-control btn btn-primary" placeholder="Upload Image" >
+                                        <div id="errorImage" class="alert-danger" style="display: none;"></div>
+                                    </div>
+                                    <h5>Selected Images</h5>
+                                    <div id="imageContainer" class="row m-3"></div>
+                                </div>
+                                <div id="preview" class="mt-5">
+                                    <div class="row" id="croppedImages"></div>
+                                </div>
+                            </div>
+                        </div>
+                <div id="hiddenContainer"></div>   
+                     <div class="d-flex row col-sm-4">
+                        <button type="submit" class="btn btn-primary btn-sm mt-4">Submit</button>
+                        <button type="reset" class="btn mr-2"><a class="btn btn-outline-primary" href="/product">Cancel</a></button>
+                     </div>
+                   </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+  <!-- Modal for Add varient -->
+  <div class="modal fade" id="variantModal" tabindex="-1" role="dialog" aria-labelledby="variantModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="variantModalLabel">Add Variant</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+              <form id="addVariantForm">
+                  <div class="form-group">
+                      <label for="vprice">Price</label>
+                      <input type="number" class="form-control" id="vprice" required>
+                  </div>
+                  <div class="form-group">
+                      <label for="vsize">Size</label>
+                      <select id="vsize" class="form-control"  required>
+                        <option value="50g">50g</option>
+                        <option value="100g">100g</option>
+                        <option value="200g">200g</option>
+                        <option value="250g">250g</option>
+                        <option value="500g">500g</option>
+                        <option value="1kg">1kg</option>
+                        <option value="2kg">2kg</option>
+                        <option value="5kg">5kg</option>
+                        <option value="10kg">10kg</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                      <label for="vquantity">Quantity</label>
+                      <input type="number" class="form-control" id="vquantity" required>
+                  </div>
+                  <div class="form-group">
+                      <label for="vdiscount">Discount</label>
+                      <input type="number" class="form-control" id="vdiscount">
+                  </div>
+                  <button type="button" class="btn btn-primary" onclick="addVariant()">Add</button>
+              </form>
+          </div>
+      </div>
+    </div>
+ </div>
+<!-- Modal for cropping -->
+<div class="modal fade" id="cropModal" tabindex="-1" role="dialog" aria-labelledby="cropModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cropModalLabel">Crop Image</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="cropArea" style="height: 500px; width: 100%;">
+                    <img id="image" style="max-width: 100%;height:auto">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="cropButton" type="button" class="btn btn-primary">Crop</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+<script>
+    let cropper;
+    const hidden= document.getElementById('hiddenContainer');
+    const fileInput = document.getElementById('fileInput');
+    const imageContainer = document.getElementById('imageContainer');
+    const cropButton = document.getElementById('cropButton');
+    const cropModal = document.getElementById('cropModal');
+    const image = document.getElementById('image');
+    const preview = document.getElementById('croppedImages');
+    let index;
+    // Image selection and display logic
+    fileInput.addEventListener('change', (event) => {
+        const files = event.target.files;
+        imageContainer.innerHTML = ''; // Clear previous images
+        Array.from(files).forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const imgItem = document.createElement('div');
+                imgItem.className = 'col-md-3 image-item';
+                imgItem.innerHTML = `
+                    <div class="row">
+                    <div class="col-3">
+                    <img src="${e.target.result}" alt="Image ${index + 1}">
+                    </div>
+                    <div class="col-3">   
+                    <button class="btn btn-sm btn-primary m-2 showButton" data-index="${index}">Show</button>
+                    </div>
+                    </div>
+                `;
+                imageContainer.appendChild(imgItem);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+
+    // Modal display logic
+    imageContainer.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (event.target.classList.contains('showButton')) {
+            index = event.target.getAttribute('data-index');
+            const file = fileInput.files[index];
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                image.src = e.target.result;
+                $('#cropModal').modal('show');
+                if (cropper) {
+                    cropper.destroy();
+                }
+                cropper = new Cropper(image, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Cropping logic
+    cropButton.addEventListener('click', async () => {
+        const croppedCanvas = cropper.getCroppedCanvas();
+        const croppedImage = croppedCanvas.toDataURL('image/png');
+    // display cropped Image  
+        const imgElement = document.createElement('img');
+        imgElement.src = croppedImage;
+        imgElement.className = 'img-thumbnail';
+        const imgWrapper = document.createElement('div');
+        imgWrapper.className = 'col-md-3';
+        imgWrapper.appendChild(imgElement);
+        preview.appendChild(imgWrapper);
+    // Extract dimensions.
+        let dimension = cropper.getData();
+        const delimiter = '|';
+        const values = [ index,dimension.x , dimension.y , dimension.height , dimension.width ];
+        const imageData = values.join(delimiter);
+        console.log("Values = ",imageData);
+        createHiddenInput(index,imageData,hidden);
+        $('#cropModal').modal('hide');
+        cropper.destroy();
+    });
+    // Create hidden input field for storing cropped coordinates !!
+    function createHiddenInput(index,data,parent){
+         const input = document.createElement('input');
+         console.log("INdex value ::"+index);
+         input.type ='hidden';
+         input.name ='cropImage'+index;
+         input.value = data;
+         console.log("Hidden Field"+input.value+input.name)
+         parent.appendChild(input);
+    }
+    // Ensure modal close button works
+    $('.modal').on('hidden.bs.modal', function () {
+        if (cropper) {
+            cropper.destroy();
+        }
+    });
+
+   function validateProductForm() {
+        let isValid = true;
+        document.querySelectorAll('.alert-danger').forEach(el => el.style.display = 'none');
+        const name = document.getElementById('exampleInputName1').value.trim();
+        const description = document.getElementById('exampleInputEmail3').value.trim();
+        const category = document.getElementById('category').value.trim();
+        const brand = document.getElementById('brand').value.trim();
+        const rating = document.getElementById('exampleInputRating').value.trim();
+        const images = document.getElementById('images').files;
+
+        if (name === "" || !/^[a-zA-Z0-9\s]+$/.test(name)) {
+            displayErrorMessage('errorName', "Valid product name is required!");
+            isValid = false;
+        }
+        if (description === "") {
+            displayErrorMessage('errorDescription', "Description is required!");
+            isValid = false;
+        }
+        if (category === "") {
+            displayErrorMessage('errorCategory', "Category is required!");
+            isValid = false;
+        }
+        if (brand === "") {
+            displayErrorMessage('errorBrand', "Brand is required!");
+            isValid = false;
+        }
+        if (rating === "" || isNaN(rating) || rating < 1 || rating > 5) {
+            displayErrorMessage('errorRating', "Rating must be a number between 1 and 5!");
+            isValid = false;
+        }
+      return isValid;
+    }
+   function displayErrorMessage(id, message) {
+        const element = document.getElementById(id);
+        element.style.display = 'block';
+        element.innerHTML = message;
+    }
+</script>
+<script>
+    let variants = [];
+    document.addEventListener('DOMContentLoaded', (event) => {
+        console.log("Inside the function !!__ Edit Product _");  
+       // console.log("Values ::",variants);
+        const values = JSON.parse(document.getElementById('varientArray').value);
+        console.log("Values ::",values);
+         variants = values.map(element =>{          
+          return({ quantity:element.quantity,
+                  price:element.price,
+                  size:element.size,
+                  discount:element.discount
+              })
+        
+           });
+        document.getElementById('variant').value= JSON.stringify(variants);   
+        console.log("Values :: in new array :: ",variants);
+    }); 
+    function addVariant() {
+        console.log("Add varient !");
+        const price = document.getElementById('vprice').value;
+        const size = document.getElementById('vsize').value;
+        const quantity = document.getElementById('vquantity').value;
+        const discount = document.getElementById('vdiscount').value;
+        console.log("Values ::",price,size,quantity,discount);
+        if(price === '' || size === '' || quantity === '' || discount === ''){
+            Swal.fire("Input values correctly !");
+            return;
+        }
+        if (isNaN(price) || isNaN(quantity) || isNaN(discount)) {
+             Swal.fire("Price, Quantity, and Discount should be numeric values!");
+             return;
+        }
+        // Validation
+        document.getElementById('addVariantForm').reset();
+        if (variants.some(variant => variant.size === size)) {
+            Swal.fire("Varient Size should be Unique!");
+            return;
+        }
+       const variant = {
+            quantity: quantity,
+            price: price,
+            size: size,
+            discount: discount
+        };
+        variants.push(variant);
+        appendVariantToForm(variant);
+       // document.getElementById('variantModal').style.display = "none";
+        console.log("Variant vales ::"+variants);
+        document.getElementById('variant').value= JSON.stringify(variants);
+        console.log("Variants :"+ (document.getElementById('variant').value));
+        
+    }
+    function appendVariantToForm(variant) {
+        const container = document.getElementById('variantContainer');
+        const variantDiv = document.createElement('div');
+        variantDiv.className = 'form-group';
+        variantDiv.innerHTML = `
+    <div class="row align-items-end varient-row" >
+        <div class="form-group col-3">
+            <label class="form-label">Price</label>
+            <input type="number" class="form-control" name="price[]" value="${variant.price}" readonly>
+        </div>
+        <div class="form-group col-2">
+            <label class="form-label">Size</label>
+            <input type="text" class="form-control" name="size[]" value="${variant.size}" readonly>
+        </div>
+        <div class="form-group col-2">
+            <label class="form-label">Quantity</label>
+            <input type="number" class="form-control" name="quantity[]" value="${variant.quantity}" readonly>
+        </div>
+        <div class="form-group col-2">
+            <label class="form-label">Discount</label>
+            <input type="text" class="form-control" name="discount[]" value="${variant.discount}" readonly>
+        </div>
+        <div class="form-group col-auto">
+            <label class="form-label">Actions</label>
+            <div class="d-flex">
+                <a onclick="deleteVarient(this)">
+                    <img width="24" height="24" src="https://img.icons8.com/material/24/filled-trash.png" alt="filled-trash"/>
+                </a>
+            </div>
+            <div class="d-flex">
+                <a onclick="editVarient(this)">
+                    <img width="24" height="24" src="https://img.icons8.com/plumpy/24/edit--v1.png" alt="edit--v1"/>
+                 </a>
+            </div>
+        </div>
+    </div>
+`;
+     container.appendChild(variantDiv);
+ }
+
+ function deleteVarient(element){
+    try {
+        console.log("Inside Delete varient !");
+        const parent = element.parentElement.parentElement.parentElement.parentElement; // Traversing up
+        if (parent && parent.classList.contains('form-group')) {
+            console.log("Inside if condition!!");
+            const index = parent.dataset.index; 
+            console.log("Index == ",index);
+            variants.splice(index, 1); // Remove the variant from the array
+            parent.remove(); // Remove the row from the DOM
+            console.log("Values  After Delete::"+variants);
+            document.getElementById('variant').value= JSON.stringify(variants);
+        } else {
+            throw new Error('Form group not found');
+        }
+    } catch (error) {
+        console.error('Error deleting variant row:', error.message);
+    }
+  }
+// Edit varient 
+function editVarient(element){
+     try {
+        console.log("Inside EDIT varient !");
+        const parent = element.parentElement.parentElement.parentElement.parentElement; // Traversing up
+        if (parent && parent.classList.contains('form-group')) {
+            console.log("Inside if condition!!");
+            const index = parent.dataset.index; 
+            console.log("Values  Before Edit ::"+index);
+            let values = variants[index];
+         //   document.getElementById('varientModal').style.display='block';
+            console.log("Values  Before Edit ::"+values);
+            console.log("Values  After Edit ::"+variants);
+            document.getElementById('variant').value= JSON.stringify(variants);
+        } else {
+            throw new Error('Form group not found');
+        }
+    } catch (error) {
+        console.error('Error deleting variant row:', error.message);
+    }
+}
+</script>
+ 
+<%- include('./includes/adminFooter.ejs') %>

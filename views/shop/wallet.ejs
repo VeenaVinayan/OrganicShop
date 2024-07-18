@@ -1,0 +1,127 @@
+<%- include('userHeader') %>
+<%- include('userNavBar') %>
+<link href="/css/wallet.css" rel="stylesheet" type="text/css"/>
+<style>
+   
+  </style>
+  <style></style>
+<section class="section-intro padding-y-sm">
+      <div class="referral-banner">
+            <div class="referral-icon">
+              <i class="fas fa-gift"></i>
+            </div>
+            <div>
+              <h1>Refer a Friend & Get Rewards!</h1>
+              <p>Invite your friends and earn amazing rewards on their first purchase.</p>
+              <a href="#">Code :: <span><%= userData.referralCode %></span></a>
+            </div>
+          </div>
+    
+ <section class="content-main">
+    <section class="content-main">
+        <div class="content-header">
+          <div>
+            <h2 class="content-title card-title">Wallet Balance :: <span><%= wallet.balance %></span></h2>
+            <h4 class="content-title card-title text-muted">Reffered Code :: <span><%= wallet.referalCode.code %></span></h4>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-3">
+                <form action="/rechargeWallet" method="POST" id="amountForm">
+                  <div class="mb-4">
+                    <label for="product_name" class="form-label"><h6>Recharge your Wallet</h6></label>
+                    <input type="number" placeholder="Amount" class="form-control" name="amount" id="amount" />
+                  </div>
+                  <div class="d-grid">
+                    <input type="submit" class="btn btn-primary" value="Recharge Wallet">
+                  </div>
+                </form>
+              </div>
+              <div class="col-md-9">
+                <div class="table-responsive">
+                  <h6>Wallet Transaction</h6>
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Transaction</th>
+                        <th>Amount</th>
+                        <th>Credit/Debit</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% wallet.transactions.forEach((value) => { %> 
+                        <tr>
+                          <td><%= value.date %></td>
+                          <td><%= value.status %></td>
+                          <td><b><%= value.amount %></b></td>
+                          <td><%= value.type %></td>
+                        </tr>
+                      <% }) %> 
+                    </tbody>
+                  </table>
+                </div>
+              </div> <!-- .col// -->
+            </div> <!-- .row // -->
+          </div> <!-- card body .// -->
+        </div> <!-- card .// -->
+      </section> 
+    <!-- ------------------------------------------------------------------ -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+   document.getElementById('amountForm').addEventListener('submit', async(e) =>{
+   console.log("Inside submit form !!");
+   e.preventDefault();
+   const amount = document.getElementById('amount').value.trim();
+   console.log("Value = " +amount);
+   //const regEx = /^(100|[1-9]\d{2,3}|10000)$/;
+    if(amount ===""){
+          console.log("Inside if block----");
+          Swal.fire({
+                  icon: "error",
+                  title: "Oops...",
+                  text: "Please input amount to be recharge !!",
+              });
+        return;   
+     }
+        const value = parseFloat(amount);
+        var options = {
+            key: 'rzp_test_RFA9E8G1qbwK0g',
+            amount: amount * 100,
+            currency: "INR",
+            name: "Organic Life",
+            description: "Wallet Recharge!",
+            image: "https://example.com/logo.png",
+
+            handler: function (response) {
+                console.log(response);
+                console.log("Payment successful !");
+                e.target.submit();
+            },
+            prefill: {
+                name: "<%= userData.name %>",
+                email: "<%= userData.email %>",
+                contact: "<%= userData.mobile %>",
+            },
+            theme: {
+                color: "#3399cd",
+            },
+        };
+        var rzp = new Razorpay(options);
+        rzp.open();
+        rzp.on("payment.failed", function (response){
+        Swal.fire({
+                  icon: "error",
+                  title: "Oops...",
+                  text: "Payment Failed !!",
+                  timer:2000,
+              });
+        console.log("Payment failed")
+    });   
+  })
+  
+</script>
+ <%- include('footer') %>

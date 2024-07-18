@@ -1,0 +1,17 @@
+.image-container {
+    overflow: hidden;
+    width: 400px; /* Adjust the width and height as needed */
+    height: 300px;
+}
+
+#mainImage {
+    width: 100%;
+    height: auto;
+    transition: transform 0.3s ease; /* Smooth transition for zoom effect */
+    cursor: zoom-in; /* Change cursor to indicate image can be zoomed */
+}
+
+#mainImage.zoomed {
+    transform: scale(1.5); /* Zoomed in by 1.5 times */
+    cursor: zoom-out; /* Change cursor to indicate image can be zoomed out */
+}
