@@ -73,6 +73,11 @@ module.exports = {
       try {
         const {id} = req.query;
         await Category.findByIdAndUpdate(id,{catStatus : false});
+        await Product.updateMany({category:id},
+          {  $set:{
+                status:false
+           }}
+        )
       }catch(err){
         console.error(err);   
       } 
@@ -158,3 +163,6 @@ module.exports = {
   },
 }
 
+function display(){
+     console.log("New featur");
+}

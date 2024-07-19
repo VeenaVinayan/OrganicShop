@@ -287,6 +287,7 @@ module.exports = {
      returnProduct : async(req,res) =>{
         try{   
            let user,amount;
+           console.log("Return Product !!")
            const {id}= req.params;
            const doc = await Order.findOneAndUpdate({'_id':id},
               {$set: {status :"Return"}},

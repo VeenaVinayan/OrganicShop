@@ -179,15 +179,17 @@
             function returnProduct(oid,date){
                const order =oid;
                const dateDelivery = date;
-          try{   
+               console.log("Inside Return Product !!");
+               try{   
                    Swal.fire({
                            title: "Do you want to return the Product?",
                            showCancelButton: true,
                            confirmButtonText: "Yes",
-                           denyButtonText: `Cancel`
+                           denyButtonText: `Cancel`,
+                           timer:1500
                     }).then((result) => {
-                             /* Read more about isConfirmed, isDenied below */
-                if (result.isConfirmed) {
+                    if (result.isConfirmed) {
+                      console.log("Inside Return Product ");
                       fetch(`/returnProduct/${order}`,
                         {   method:'PATCH',
                             headers:{'content-Type':'application/json'}
@@ -197,8 +199,7 @@
                         Swal.fire("Changes are not saved", "", "info");
                      }
                  });              
-                window.location.reload();
-           }catch(err){
+            }catch(err){
             console.log('Error !!');
          }
       }
