@@ -7,7 +7,7 @@ const Address = require('../models/address');
 const Order = require('../models/order');
 const Wishlist = require('../models/wishlist');
 const moment =require('moment');
-const PER_PAGE = 6;
+const PER_PAGE = 8;
 
 module.exports = {
      getUserShop : async (req,res) => {
@@ -16,8 +16,7 @@ module.exports = {
         if(isNaN(page) || page<1) {
                     page=1;
           }
-        
-         const [category,cart,products,count] = await Promise.all([
+        const [category,cart,products,count] = await Promise.all([
                Category.find({catStatus:true},'_id catName'),
                Cart.findOne({user:req.session.userId}),
                Product.find({status:true},'productName varient image ')

@@ -1,28 +1,38 @@
 const Wallet = require('../models/wallet');
 const User = require('../models/user');
 const Category = require('../models/category');
-
+const Cart = require('../models/cart');
+const PER_PAGE = 5;
 
 module.exports ={
      viewWallet : async (req,res) =>{
-          const wallet = await Wallet.findOne({user:req.session.userId});
-          const userData = await User.findOne({'_id':req.session.userId});
-          const category = await Category.find({catStatus:true},'_id catName');
+          const {userId,user} = req.session;
+          let page = Number(req.query.page);
+          if(isNaN(page)|| page<1){
+               page=1;
+          }
+          const [userData,wallet,category,cart] = await Promise.all( [
+             User.findOne({'_id':userId}),
+             Wallet.findOne({user:userId}),
+             Category.find({catStatus:true},'_id catName'),
+             Cart.findOne({user:userId}),
+           ]);
+          
+          let cartCount = cart ? cart.items.length :0;
           res.render('./shop/wallet',{
                 userData : userData,
                 wallet : wallet,
                 category:category,
-                user:req.session.user,
-                count:0,
+                user:user,
+                count:cartCount,
           });
      },
      rechargeWallet: async (req,res) => {
        try {
-          c
           const {amount}=req.body;
           const{userId}=req.session;
           const regEx=/^(100|[1-9]\d{2,3}|10000)$/
-          if(amount !== "" && regEx.test(amount.toString())){
+          if(amount !== "" && regEx.test(amount.toString()) && amount>0){
                await Wallet.updateOne({user: userId},{ 
                      $inc: {balance: amount} ,
                      $push: { transactions: { amount: amount, status: 'Recharge', type: 'credit' } }  }    
@@ -37,7 +47,7 @@ module.exports ={
                });
             
          }else{
-               req.flash('error',"Amount is too low ...")
+               req.flash('error',"Invalid amount !!")
                res.redirect('/wallet');
           }
           res.redirect('/wallet');

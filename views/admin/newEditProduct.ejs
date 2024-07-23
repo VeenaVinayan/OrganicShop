@@ -24,16 +24,16 @@
                         <div class="row">
                             <div class="col-md-6 form-section">
                                 <h4 class="card-title">Product Features</h4>
-                                <!-- Add your product basic data fields here -->
-                                <!-- Example fields -->
-                                 <input type="hidden" name="productId" value="<%= product._id %>">
+                                <input type="hidden" name="productId" value="<%= product._id %>">
                                 <div class="form-group">
                                     <label for="productName">Product Name</label>
-                                    <input type="text" class="form-control" id="productName" name="productName" value="<%= product.productName %>" required>
+                                    <input type="text" class="form-control" id="productName" name="productName" value="<%= product.productName %>">
+                                    <div id="errorName" class="alert-danger" role="alert" style="display: none;"></div>
                                 </div>
                                 <div class="form-group">
                                     <label for="productDescription">Product Description</label>
-                                    <textarea class="form-control" id="description" name="description" rows="4" required><%= product.description %></textarea>
+                                    <textarea class="form-control" id="description" name="description" rows="4" required ><%= product.description %></textarea>
+                                    <div id="errorDescription" class="alert-danger" style="display: none;"></div>
                                 </div>
                                 <div class="form-group">
                                     <label for="exampleInputEmail3">Category</label>
@@ -50,7 +50,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label name='lblbrand'>Brands</label>
-                                    <input type="text" class="form-control" id="brand" name="brand" value="<%= product.brand %>" required>
+                                    <input type="text" class="form-control" id="brand" name="brand" value="<%= product.brand %>" >
                                     <div id="errorBrand" class="alert-danger" style="display: none;"></div>
                                 </div>
         <h4><label >Product size variants</label></h4>
@@ -61,19 +61,30 @@
                 <div class="row align-items-end varient-row">
                     <div class="form-group col-3">
                         <label class="form-label">Price</label>
-                        <input type="number" class="form-control" name="price[]" value="<%= variant.price %>" >
+                        <input type="number" class="form-control" name="price[]" value="<%= variant.price %>" oninput="validatePrice(this)">
                     </div>
                     <div class="form-group col-2">
                         <label class="form-label">Size</label>
-                        <input type="text" class="form-control" name="size[]" value="<%= variant.size %>" >
+                        <select id="vsize" name="size[]" class="form-control" oninput="validateSize(this)" >
+                            <option selected value="<%= variant.size %>"><%= variant.size %></option>
+                            <option value="50g">50gm</option>
+                            <option value="100g">100gm</option>
+                            <option value="200g">200gm</option>
+                            <option value="250g">250gm</option>
+                            <option value="500g">500gm</option>
+                            <option value="1kg">1kg</option>
+                            <option value="2kg">2kg</option>
+                            <option value="5kg">5kg</option>
+                            <option value="10kg">10kg</option>
+                        </select>
                     </div>
                     <div class="form-group col-2">
                         <label class="form-label">Quantity</label>
-                        <input type="number" class="form-control" name="quantity[]" value="<%= variant.quantity %>" >
+                        <input type="number" class="form-control" name="quantity[]" value="<%= variant.quantity %>" oninput="validateQuantity(this)" >
                     </div>
                     <div class="form-group col-2">
                         <label class="form-label">Discount</label>
-                        <input type="text" class="form-control" name="discount[]" value="<%= variant.discount %>" >
+                        <input type="text" class="form-control" name="discount[]" value="<%= variant.discount %>" oninput="validateDiscount(this)">
                     </div>
                     <div class="form-group col-auto">
                         <label class="form-label">Actions</label>
@@ -93,7 +104,7 @@
         <input type="hidden" name="variantArray" id="variant" >
          <div class="form-group col-4">
                 <label name="rating">Rating</label>
-                <input type="number" class="form-control" id="exampleInputRating" name="rating" value="<%= product.rating %>" required>
+                <input type="number" class="form-control" id="exampleInputRating" name="rating" value="<%= product.rating %>">
                 <div id="errorRating" class="alert-danger" style="display: none;"></div>
          </div>  
      </div>
@@ -150,28 +161,32 @@
                   <div class="form-group">
                       <label for="vprice">Price</label>
                       <input type="number" class="form-control" id="vprice" required>
+                      <div class="alert-danger" role="alert" style="display: none;" id="errorPrice"> </div>
                   </div>
                   <div class="form-group">
                       <label for="vsize">Size</label>
                       <select id="vsize" class="form-control"  required>
-                        <option value="50g">50g</option>
-                        <option value="100g">100g</option>
-                        <option value="200g">200g</option>
-                        <option value="250g">250g</option>
-                        <option value="500g">500g</option>
+                        <option value="50g">50gm</option>
+                        <option value="100g">100gm</option>
+                        <option value="200g">200gm</option>
+                        <option value="250g">250gm</option>
+                        <option value="500g">500gm</option>
                         <option value="1kg">1kg</option>
                         <option value="2kg">2kg</option>
                         <option value="5kg">5kg</option>
                         <option value="10kg">10kg</option>
                     </select>
+                    <div class="alert-danger" role="alert" style="display: none;" id="errorSize"> </div>
                   </div>
                   <div class="form-group">
                       <label for="vquantity">Quantity</label>
                       <input type="number" class="form-control" id="vquantity" required>
+                      <div class="alert-danger" role="alert" style="display: none;" id="errorQuantity"> </div>
                   </div>
                   <div class="form-group">
                       <label for="vdiscount">Discount</label>
                       <input type="number" class="form-control" id="vdiscount">
+                      <div class="alert-danger" role="alert" style="display: none;" id="errorDiscount"> </div>
                   </div>
                   <button type="button" class="btn btn-primary" onclick="addVariant()">Add</button>
               </form>
@@ -206,140 +221,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
-<script>
-    let cropper;
-    const hidden= document.getElementById('hiddenContainer');
-    const fileInput = document.getElementById('fileInput');
-    const imageContainer = document.getElementById('imageContainer');
-    const cropButton = document.getElementById('cropButton');
-    const cropModal = document.getElementById('cropModal');
-    const image = document.getElementById('image');
-    const preview = document.getElementById('croppedImages');
-    let index;
-    // Image selection and display logic
-    fileInput.addEventListener('change', (event) => {
-        const files = event.target.files;
-        imageContainer.innerHTML = ''; // Clear previous images
-        Array.from(files).forEach((file, index) => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const imgItem = document.createElement('div');
-                imgItem.className = 'col-md-3 image-item';
-                imgItem.innerHTML = `
-                    <div class="row">
-                    <div class="col-3">
-                    <img src="${e.target.result}" alt="Image ${index + 1}">
-                    </div>
-                    <div class="col-3">   
-                    <button class="btn btn-sm btn-primary m-2 showButton" data-index="${index}">Show</button>
-                    </div>
-                    </div>
-                `;
-                imageContainer.appendChild(imgItem);
-            };
-            reader.readAsDataURL(file);
-        });
-    });
+<script src="/script/cropper.js"> </script>
 
-    // Modal display logic
-    imageContainer.addEventListener('click', (event) => {
-        event.preventDefault();
-        if (event.target.classList.contains('showButton')) {
-            index = event.target.getAttribute('data-index');
-            const file = fileInput.files[index];
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                image.src = e.target.result;
-                $('#cropModal').modal('show');
-                if (cropper) {
-                    cropper.destroy();
-                }
-                cropper = new Cropper(image, {
-                    aspectRatio: 1,
-                    viewMode: 1,
-                });
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-
-    // Cropping logic
-    cropButton.addEventListener('click', async () => {
-        const croppedCanvas = cropper.getCroppedCanvas();
-        const croppedImage = croppedCanvas.toDataURL('image/png');
-    // display cropped Image  
-        const imgElement = document.createElement('img');
-        imgElement.src = croppedImage;
-        imgElement.className = 'img-thumbnail';
-        const imgWrapper = document.createElement('div');
-        imgWrapper.className = 'col-md-3';
-        imgWrapper.appendChild(imgElement);
-        preview.appendChild(imgWrapper);
-    // Extract dimensions.
-        let dimension = cropper.getData();
-        const delimiter = '|';
-        const values = [ index,dimension.x , dimension.y , dimension.height , dimension.width ];
-        const imageData = values.join(delimiter);
-        console.log("Values = ",imageData);
-        createHiddenInput(index,imageData,hidden);
-        $('#cropModal').modal('hide');
-        cropper.destroy();
-    });
-    // Create hidden input field for storing cropped coordinates !!
-    function createHiddenInput(index,data,parent){
-         const input = document.createElement('input');
-         console.log("INdex value ::"+index);
-         input.type ='hidden';
-         input.name ='cropImage'+index;
-         input.value = data;
-         console.log("Hidden Field"+input.value+input.name)
-         parent.appendChild(input);
-    }
-    // Ensure modal close button works
-    $('.modal').on('hidden.bs.modal', function () {
-        if (cropper) {
-            cropper.destroy();
-        }
-    });
-
-   function validateProductForm() {
-        let isValid = true;
-        document.querySelectorAll('.alert-danger').forEach(el => el.style.display = 'none');
-        const name = document.getElementById('exampleInputName1').value.trim();
-        const description = document.getElementById('exampleInputEmail3').value.trim();
-        const category = document.getElementById('category').value.trim();
-        const brand = document.getElementById('brand').value.trim();
-        const rating = document.getElementById('exampleInputRating').value.trim();
-        const images = document.getElementById('images').files;
-
-        if (name === "" || !/^[a-zA-Z0-9\s]+$/.test(name)) {
-            displayErrorMessage('errorName', "Valid product name is required!");
-            isValid = false;
-        }
-        if (description === "") {
-            displayErrorMessage('errorDescription', "Description is required!");
-            isValid = false;
-        }
-        if (category === "") {
-            displayErrorMessage('errorCategory', "Category is required!");
-            isValid = false;
-        }
-        if (brand === "") {
-            displayErrorMessage('errorBrand', "Brand is required!");
-            isValid = false;
-        }
-        if (rating === "" || isNaN(rating) || rating < 1 || rating > 5) {
-            displayErrorMessage('errorRating', "Rating must be a number between 1 and 5!");
-            isValid = false;
-        }
-      return isValid;
-    }
-   function displayErrorMessage(id, message) {
-        const element = document.getElementById(id);
-        element.style.display = 'block';
-        element.innerHTML = message;
-    }
-</script>
 <script>
     let variants = [];
     document.addEventListener('DOMContentLoaded', (event) => {
@@ -364,16 +247,31 @@
         const size = document.getElementById('vsize').value;
         const quantity = document.getElementById('vquantity').value;
         const discount = document.getElementById('vdiscount').value;
-        console.log("Values ::",price,size,quantity,discount);
-        if(price === '' || size === '' || quantity === '' || discount === ''){
-            Swal.fire("Input values correctly !");
+        const errorPrice = document.getElementById('errorPrice');
+        const errorQuantity = document.getElementById('errorQuantity');
+        const errorSize = document.getElementById('errorSize');
+        const errorDiscount = document.getElementById('errorDiscount');
+        if(price === '' || price < 0 || price > 10000 || isNaN(price)){
+            errorPrice.style.display ="block";
+            errorPrice.innerHTML = "Invalid price !";
             return;
         }
-        if (isNaN(price) || isNaN(quantity) || isNaN(discount)) {
-             Swal.fire("Price, Quantity, and Discount should be numeric values!");
-             return;
+        if(isNaN(quantity) || quantity < 0 || quantity >50 || quantity === '') {
+              errorQuantity.style.display ="block";
+              errorQuantity.innerHTML = "Invalid Quantity !";
+              return;
         }
-        // Validation
+        if( isNaN(discount)|| discount <=-1 || discount >15 || discount ===''){
+              errorDiscount.style.display ="block";
+              errorDiscount.innerHTML = "Invalid Discount !";
+              return;
+        }
+        if(size === ""){
+              errorSize.style.display ="block";
+              errorSize.innerHTML = "Invalid Size !";
+              return; 
+        }
+       // Validation
         document.getElementById('addVariantForm').reset();
         if (variants.some(variant => variant.size === size)) {
             Swal.fire("Varient Size should be Unique!");
@@ -474,5 +372,100 @@ function editVarient(element){
     }
 }
 </script>
- 
+<script>
+    function validatePrice(input) {
+        // Your price validation logic here
+        const value = parseFloat(input.value);
+        if (isNaN(value) || value <= 0 || value > 10000) {
+            input.setCustomValidity("Please enter a valid price.");
+        } else {
+            input.setCustomValidity("");
+        }
+    }
+    
+    function validateSize(input) {
+        // Your size validation logic here
+        const value = input.value.trim();
+        if (value === "") {
+            input.setCustomValidity("Please choose size.");
+        } else {
+            input.setCustomValidity("");
+        }
+    }
+    
+    function validateQuantity(input) {
+        // Your quantity validation logic here
+        const value = parseInt(input.value, 10);
+        if (isNaN(value) || value < 0 || value>100) {
+            input.setCustomValidity("Please enter a valid quantity.");
+        } else {
+            input.setCustomValidity("");
+        }
+    }
+    
+    function validateDiscount(input) {
+        // Your discount validation logic here
+        const value = parseFloat(input.value);
+        if (isNaN(value) || value < 0 || value > 20) {
+            input.setCustomValidity("Please enter a valid discount between 0 and 100.");
+        } else {
+            input.setCustomValidity("");
+        }
+    }
+      
+    function deleteVarient(element) {
+        // Your delete logic here
+        const row = element.closest('.varient-row');
+        if (row) {
+            row.remove();
+        }
+    }
+    </script>
+    <script>
+    function validateProductForm() {
+        let isValid = true;
+        document.querySelectorAll('.alert-danger').forEach(el => el.style.display = 'none');
+        const name = document.getElementById('productName').value.trim();
+        const description = document.getElementById('description').value.trim();
+        const category = document.getElementById('category').value.trim();
+        const brand = document.getElementById('brand').value.trim();
+        const rating = document.getElementById('rating').value.trim();
+        const images = document.getElementById('fileInput').files;
+        const expr = /^[A-Za-z\s]+$/;
+        if (name === "" || !expr.test(name)) {
+            displayErrorMessage('errorName', "Valid product name is required!");
+            isValid = false;
+        }
+        if (description === "" || !/^[a-zA-Z0-9\s.]*$/.test(description)) {
+               displayErrorMessage('errorDescription', "Description Error!");
+               isValid = false;
+        }
+        if (category === "" ) {
+            displayErrorMessage('errorCategory', "Category is required!");
+            isValid = false;
+        }
+        if (brand === "" || !expr.test(brand)) {
+            displayErrorMessage('errorBrand', "Brand is required!");
+            isValid = false;
+        }
+        if (rating === "" || isNaN(rating) || rating < 1 || rating > 5) {
+            displayErrorMessage('errorRating', "Rating must be a number between 1 and 5!");
+            isValid = false;
+        }
+        if (images.length === 0) {
+            displayErrorMessage('errorImage', "At least one image is required!");
+            isValid = false;
+        }
+        if(variant.length === 0){
+              displayErrorMessage('errorVarient', "At least one image is required!");
+              isValid = false;
+        }
+        return isValid;
+    }
+    function displayErrorMessage(id, message) {
+        const element = document.getElementById(id);
+        element.style.display = 'block';
+        element.innerHTML = message;
+    }
+    </script>
 <%- include('./includes/adminFooter.ejs') %>

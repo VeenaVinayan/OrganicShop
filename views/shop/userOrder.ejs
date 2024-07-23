@@ -97,6 +97,7 @@
                           contentType : 'application/json',
                           success : function(res){
                             Swal.fire(res.message, "", "success");
+                            window.location.reload();
                            },
                            error : function(xhr,status,error){
                              Swal.fire(error.message, "", "info");

@@ -240,21 +240,7 @@ module.exports = {
                console.log(err);
           }
      },
-     // getFailurePage : async(req,res) => {
-     //      try{
-     //           const {user,userId} = req.session;
-     //          const category = await Category.find({catStatus:true},'_id catName');
-     //          const oid= await Order.find({user:userId})
-     //          res.render('./shop/orderFailure',{
-     //               category : category,
-     //               user : user,
-     //               count : 0,
-     //          });
-     //     }catch(err){
-     //          console.log("Error occured::"+err);
-     //     }
-     //     },
-     applyCoupon: async(req,res) =>{
+    applyCoupon: async(req,res) =>{
        try{
            console.log("Inside apply coupon !");
            const { coupon,total }  = req.params;
@@ -305,16 +291,17 @@ module.exports = {
                );
           }) ;
           const results= await Promise.all(updatePromises);
-
-           await Wallet.updateOne(
+          await Wallet.updateOne(
                { user: user },
                {
                  $inc: { balance: amount },
                  $push: { transactions: { amount: amount, status: 'Refund', type: 'credit' } }
                },
               );
+              res.status(200).json({success:true,message:"Return product Successfully!!"});  
         }catch(err){
             console.log(err);
+            res.status(500).json({error:true,message:"Error occured Return Product !!!!"});
         } 
      },
    changeStatus : async(req,res) => {
@@ -324,8 +311,10 @@ module.exports = {
                await Order.updateOne({_id:id},
                     {$set:{payStatus:true,status:'Placed'}}
                );
+               res.status(200).json({success:true,message:"Retry payment Successfully !!"});
              }catch(err){
                console.log('Error occured ::'+err);
+               res.status(500).json({error:true,message:"Error during Retry Payment  !!"});
           }
      }
 }

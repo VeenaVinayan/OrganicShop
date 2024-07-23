@@ -68,12 +68,10 @@
               <div class="col-md-4">
                 <p><%= order.paymentMode %></p>
               </div>
-              <% if(order.status === 'Delivered') { %> 
               <div class="col-md-4">
                  <button class="btn btn-info" id="btnDownload" data-order= '<%= JSON.stringify(order) %>'>Invoice</button>
               </div>
-              <% } %>
-            </div>
+             </div>
             <div class="row p-2">
               <div class="col-md-4">
                 <p class="font-weight-bold">Payment Status:</p>
@@ -186,8 +184,7 @@
                            showCancelButton: true,
                            confirmButtonText: "Yes",
                            denyButtonText: `Cancel`,
-                           timer:1500
-                    }).then((result) => {
+                      }).then((result) => {
                     if (result.isConfirmed) {
                       console.log("Inside Return Product ");
                       fetch(`/returnProduct/${order}`,
@@ -195,6 +192,7 @@
                             headers:{'content-Type':'application/json'}
                         });
                        Swal.fire("Saved!", "", "success");
+                       window.location.reload();
                       }else if (result.isDenied) {
                         Swal.fire("Changes are not saved", "", "info");
                      }
@@ -249,11 +247,6 @@
               method:'PATCH',
               contentType:'application/json',
               success: function (res){
-                Swal.fire({
-                     title: "Good job!",
-                     text: "Payment Successfully Completed!",
-                     icon: "success"
-                  });
                 window.location.reload();  
               },
               error:function(xhr,status,error){
@@ -264,10 +257,9 @@
               }); 
               }
       })
-         // fetch(`/changeStatus/${id}`,{method:'post'});
-      }catch(err){
+     }catch(err){
          console.log("Error ::"+err);
-      }
+    }
   }
   document.addEventListener('DOMContentLoaded', function() {    
     document.getElementById('btnDownload').addEventListener('click', function() {

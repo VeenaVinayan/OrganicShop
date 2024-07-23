@@ -58,32 +58,34 @@
                     <form action="/userSignupSubmit" method="POST">
                         <div class="mb-3">
                             <label class="form-label">Name</label>
-                            <input class="form-control" placeholder="Your Full Name" type="text" name="name" required id="fullname">
-                            <span id="name-error" style="font-size: 14px"> </span>
+                            <input class="form-control" placeholder="Your Full Name" type="text" name="name" id="fullname" oninput="validateName(this)" required>
+                            <div class="alert-danger" style="display: none;" role="alert" id="nameError"></div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Email</label>
-                            <input class="form-control" placeholder="Your email" type="email"  name="email" id="email" required>
+                            <input class="form-control" placeholder="Your email" type="email"  name="email" id="email" oninput="validateEmail(this)" required>
+                            <div class="alert-danger" style="display: none;" role="alert" id="emailError"></div>
                         </div> <!-- form-group// -->
                         <div class="mb-3">
                             <label class="form-label">Phone</label>
-                            <input class="form-control" placeholder="Phone" type="text"  name="phone" id="mobile" required> 
-                            <span id="phoneError" style="font-size: 14px"> </span>
+                            <input class="form-control" placeholder="Phone" type="text"  name="phone" id="mobile" oninput="validatePhone(this)" required> 
+                            <div class="alert-danger" style="display: none;" role="alert" id="phoneError"></div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Refferral Code</label>
                             <input class="form-control" placeholder="Refferal code (If any)" type="text" name="code" id="code"> 
                             <span id="phoneError" style="font-size: 14px"> </span>
+                            <div class="alert-danger" style="display: none;" role="alert" id="referalError"></div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Create password</label>
-                            <input class="form-control" placeholder="Password" type="password"  name="password" min="8" max="12" id="pwd" required>
-                            <span id="passwordError" style="font-size: 14px"> </span>
+                            <input class="form-control" placeholder="Password" type="password"  name="password" id="password" oninput="validatePassword(this)" required>
+                            <div class="alert-danger" style="display: none;" role="alert" id="pwdError"></div>
                         </div> <!-- form-group// -->
                         <div class="mb-3">
                             <label class="form-label">Confirm password</label>
-                            <input class="form-control" placeholder="Password" type="password"  name="con-password" min="8" max="12" id="con-pwd" required>
-                            <span id="password-error" style="font-size: 14px"> </span>
+                            <input class="form-control" placeholder="Password" type="password"  name="con-password" oninput="validateConfirmPassword(this)" required>
+                            <div class="alert-danger" style="display: none;" role="alert" id="conPwdError"></div>
                         </div> <!-- form-group// -->
                         <div class="mb-3">
                             <p class="small text-center text-muted">By signing up, you confirm that you’ve read and accepted our User Notice and Privacy Policy.</p>
@@ -123,53 +125,78 @@
     <!-- Main Script -->
     <script src="/assets/js/main.js" type="text/javascript"></script>
     <script>
-
-        const pwdError= document.getElementById('password-error');
-        const errorPassword = document.getElementById('passwordError');
+        const nameError= document.getElementById('nameError');
+        const emailError= document.getElementById('emailError');
+        const pwdError= document.getElementById('pwdError');
+        const conPwdError= document.getElementById('conPwdError');
         const phoneError = document.getElementById('phoneError');
-        const pwd= document.getElementById('pwd').value;
-        const conPwd=document.getElementById('con-pwd').value;
-        const phone = document.getElementById('mobile');
-        const name = document.getElementById('fullname');
-        const email = document.getElementById('email');
-        
-        function matchPassword(){
-            if(pwd != conPwd){
-               console.log(pwd,conPwd);
-               pwdError.innerHTML="Passwords doesn't match";
-               pwdError.style.color="red";
-               return false;
-             }
-             else 
-               return true;
-        }
-        function isValidPassword(){
-            const passwordRegExpression = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,12}$/
-            if(!pwd.match(passwordRegExpression)){
-                errorPassword.innerHTML="Password must contains a-z, A-Z ,0-9 ";
-                errorPassword.style.color="red";
-                return false;
+
+        function validateName(input) {
+            const value = input.value.trim();
+            if (value === "" || !/^[a-zA-Z/s.]/.test(value)|| (value.length <3 || value.length > 14) ) {
+                input.setCustomValidity("Name Invalid.");
+                nameError.style.display="block";
+                nameError.innerHTML="Name validation error";
+            } else {
+                input.setCustomValidity("");
+                showErrorMessage(input, "");
+            }
+        }  
+        function validateEmail(input) {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const value =input.value.trim();
+            if (value === "" || !emailPattern.test(value)) {
+                input.setCustomValidity("Please enter a valid email address.");
+                emailError.style.display="block";
+                emailError.innerHTML="Email validation error";
+            } else {
+                input.setCustomValidity("");
+                showErrorMessage(input, "");
+            }
+        } 
+        function validatePhone(input) {
+            const phonePattern = /^[7-9][0-9]{9}$/;
+            const value = input.value.trim();
+            if (!phonePattern.test(value) || value==="") {
+                input.setCustomValidity("Please enter a valid 10-digit phone number.");
+                phoneError.style.display="block";
+                phoneError.innerHTML="Phone Number validation error";
+            } else {
+                input.setCustomValidity("");
+                showErrorMessage(input, "");
             }
         }
-        function isValidMobile(){
-            const numberRegExp = /^\d{10}$/
-            if(!phone.match(numberRegExp)){
-                phoneError.innerHTML="Enter Valid 10 digit Phone Number";
-                phoneError.style.color="red";
-                return false;
-             }
+        function validatePassword(input) {
+             const exp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+             const value = input.value.trim();
+            if (value.length < 8 || value.length > 12 || exp.test(value) || value ==="") {
+                input.setCustomValidity("Password must be between 8 and 12 characters.");
+                pwdError.style.display="block";
+                pwd.innerHTML="Phone Number validation error";
+            } else {
+                input.setCustomValidity("");
+                showErrorMessage(input, "");
+            }
         }
-        function validateForm(){
-
-          if(matchPassword() || !isValidPassword() || !isValidMobile()){
-              return false;
-          }
-          if(name ==="" || phone ==="" ||email ===""){
-             document.getElementById('errorMessage').innerHTML = "Please fill all the fields !";
-             return false;
-          }
-          else true;
-       }
+        function validateConfirmPassword(input) {
+            const password = document.getElementById('password').value.trim();
+            const value = input.value.trim();
+            console.log("values::",password,value);
+            if (value !== password) {
+                input.setCustomValidity("Passwords do not match.");
+                conPwdError.style.display="block";
+                conPwdError.innerHTML="Incorrect password !";
+            } else {
+                input.setCustomValidity("");
+                showErrorMessage(input, "");
+            }
+        }
+        function showErrorMessage(input, message) {
+            const messageDiv = input.nextElementSibling;
+            messageDiv.textContent = message;
+            messageDiv.style.display = message ? 'block' : 'none';
+        }
+      
  </script>
 </body>
 </html>

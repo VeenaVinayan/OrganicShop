@@ -118,7 +118,7 @@
             }
         function validateForm(){
             const name = document.getElementById('name').value.trim();
-            const regEx =  /^[A-Za-z]{3,15}$/
+            const regEx =  /^[A-Za-z/s]{3,15}$/
             if(name !== "" && regEx.test(name) ){
                  return true;
             }

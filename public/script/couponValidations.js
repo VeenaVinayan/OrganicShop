@@ -1,72 +1,3 @@
-<%- include('./includes/adminHead') %>
-<%- include('./includes/adminNavBar') %>
-
-         <section class="content-main">
-            <div class="row">
-                <div class="col-9">
-                    <div class="content-header">
-                        <h2 class="content-title">Add New Coupon</h2>
-                    </div>
-                </div>
-                <div>
-                <%  if(message.error) { %>
-                    <div class="alert alert-danger" role="alert">
-                       <%= message.error %>
-                    </div>
-                <% } %>
-                <%  if(message.success) { %>
-                    <div class="alert alert-success" role="alert">
-                       <%= message.success %>
-                    </div>
-                <% } %>
-               </div>
-                <div class="col-lg-6">
-                  <form action="/saveCoupon" method="post" id="couponForm" onsubmit="return validateCouponForm()">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <div class="mb-4">
-                                <label for="product_title" class="form-label">Coupon Name</label>
-                                <input type="text" placeholder="Type here" class="form-control" id="couponName" name="coupon">
-                                <div id="errorName" role="alert" class="alert-danger" style="display: none;"></div>
-                            </div>
-                            <div class="mb-4">
-                                <label for="product_title" class="form-label">Coupon Description</label>
-                                <input type="text" placeholder="Type here" class="form-control" id="couponDescription" name="description">
-                                <div id="errorDescription" role="alert" class="alert-danger" style="display: none;" ></div>
-                            </div>
-                            <div class="row gx-3">
-                                <div class="col-md-6  mb-3">
-                                    <label for="product_sku" class="form-label">Discount Percentage</label>
-                                    <input type="number" placeholder="Type here" class="form-control" name="percentage" id="percent" oninput="validatePercentage()">
-                                    <div id="errorPercentage" role="alert" class="alert-danger" style="display: none;"></div>
-                                </div>
-                                <div class="col-md-6  mb-3">
-                                    <label for="product_color" class="form-label">Minimum Purchase Amount</label>
-                                    <input type="number" placeholder="Type here" class="form-control" id="minimumAmount" name="minimumAmount" oninput="validateMinimum()">
-                                    <div id="errorAmount" role="alert" class="alert-danger" style="display: none;"></div>
-                                </div>
-                                <div class="col-md-6  mb-3">
-                                    <label for="product_size" class="form-label">Maximum discount Amount</label>
-                                    <input type="number" placeholder="Type here" class="form-control" id="maximumAmount" name="maximumAmount" oninput="validateMaximum()">
-                                    <div id="maximumError" role="alert" class="alert-danger" style="display: none;"></div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="product_brand" class="form-label">Expiry Date</label>
-                                    <input type="date" placeholder="Type here" class="form-control" id="expiryDate" name="expiryDate" oninput="validateExpiryDate()">
-                                    <div id="errorExpiryDate" role="alert" class="alert-danger" style="display: none;"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <input type="submit" class="btn btn-md rounded font-sm hover-up" value="Publish">
-                            </div>
-                         </form>
-                        </div>
-                    </div> <!-- card end// -->
-               </div>
-            </div>
-          </section>
-   
-<script>
 
 function validateExpiryDate(){
      const input = document.getElementById('expiryDate');
@@ -189,6 +120,3 @@ function displayErrorMessage(element, message) {
     element.style.display = 'block';
     element.innerHTML = message;
 }
-</script>
-
-<%- include('./includes/adminFooter') %>

@@ -55,6 +55,7 @@ module.exports = {
       }
    },
    addCategory : async(req,res) =>{
+    try {
       const name=req.body.catName.toUpperCase();
       const isExist = await Category.findOne({catName:name});
       if(isExist) {
@@ -66,6 +67,9 @@ module.exports = {
       })
        await newCategory.save();
        res.redirect('/category');
+    } 
+    }catch(err){
+       console.log("Error occured ::"+err);
     } 
     },
     
@@ -86,6 +90,11 @@ module.exports = {
         try {
           const {id} = req.query;
           await Category.findByIdAndUpdate(id,{catStatus : true});
+          await Product.updateMany({category:id},
+            {  $set:{
+                  status:true
+             }}
+          )
         }catch(err){
           console.error(err);   
         } 

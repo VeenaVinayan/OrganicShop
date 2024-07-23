@@ -8,7 +8,9 @@ module.exports={
      },
     saveCoupon: async(req,res) =>{
        try {
+            console.log("Inside Add coupon!!");
             const {coupon,description,percentage,minimumAmount,maximumAmount,expiryDate} =req.body;
+            if(coupon !="" && description !="" && percentage !=""){ 
             const newCoupon = new Coupon({
                     coupon,
                     description,
@@ -18,7 +20,13 @@ module.exports={
                     expiryDate,
              });
              await newCoupon.save();
+             req.flash('success',"Successfully added coupon !!");
              res.redirect('/couponList');
+           }else{
+               req.flash('error',"Error occured  !!");
+               res.redirect('/couponList');
+             }
+             
           }catch(err){
             console.log(err);
        }
@@ -65,7 +73,9 @@ module.exports={
  },
   saveEditCoupon : async (req,res) => {
      const {id,coupon,description,percentage,minimumAmount,maximumAmount,expiryDate} =req.body;
-     await Coupon.findOneAndUpdate({'_id':id},{
+     if(id !="" && coupon != "" && description !="" && percentage != "" && maximumAmount != "" && minimumAmount !="" && expiryDate != ""){ 
+      console.log("Inside Edit coupon with validated values |||");
+      await Coupon.findOneAndUpdate({'_id':id},{
         $set:{ coupon:coupon,
                description:description,
                percentage:percentage,
@@ -74,6 +84,12 @@ module.exports={
                expiryDate:expiryDate,
          }    
      });
+     req.flash('success',"Successfully Edit coupon !!")
      res.redirect('/couponList');
+   // } else{
+   //    console.log("Inside Error Edit coupon with validated values |||");
+   //     req.flash('error','Validation Error !!');
+   //     res.redirect('/couponList');
+   }
   }
 }

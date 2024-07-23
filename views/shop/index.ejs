@@ -69,6 +69,16 @@
 <header class="section-heading">
 	<h3 class="section-title">Popular products</h3>
 </header>
+<%  if(message.error) { %>
+  <div class="alert alert-danger" role="alert">
+     <%= message.error %>
+  </div>
+<% } %>
+<%  if(message.success) { %>
+  <div class="alert alert-success" role="alert">
+     <%= message.success %>
+  </div>
+<% } %>
 <div class="row" id="productGrid">
 <% product.forEach((row) =>{ %>
    <div class="col-md-3">

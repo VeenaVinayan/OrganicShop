@@ -22,7 +22,7 @@
         <div class="content-header">
           <div>
             <h2 class="content-title card-title">Wallet Balance :: <span><%= wallet.balance %></span></h2>
-            <h4 class="content-title card-title text-muted">Reffered Code :: <span><%= wallet.referalCode.code %></span></h4>
+            <h4 class="content-title card-title text-muted">Reffered Code ::  <span><% wallet.referalCode ? wallet.referalCode.code :'Nil' %></span></h4>
           </div>
         </div>
         
@@ -73,20 +73,20 @@
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
    document.getElementById('amountForm').addEventListener('submit', async(e) =>{
-   console.log("Inside submit form !!");
    e.preventDefault();
    const amount = document.getElementById('amount').value.trim();
    console.log("Value = " +amount);
-   //const regEx = /^(100|[1-9]\d{2,3}|10000)$/;
-    if(amount ===""){
-          console.log("Inside if block----");
-          Swal.fire({
+   if (amount === "" || isNaN(amount) || amount < 100 || amount > 2000){ 
+      console.log("Inside if block !!! Invalid amount !"+amount);
+      Swal.fire({
                   icon: "error",
                   title: "Oops...",
                   text: "Please input amount to be recharge !!",
+                  timer:1500,
               });
-        return;   
-     }
+        return;      
+      }else{ 
+        console.log("Inside Razorpay!!");
         const value = parseFloat(amount);
         var options = {
             key: 'rzp_test_RFA9E8G1qbwK0g',
@@ -119,8 +119,9 @@
                   text: "Payment Failed !!",
                   timer:2000,
               });
-        console.log("Payment failed")
-    });   
+        console.log("Payment failed");
+     });   
+   }
   })
   
 </script>

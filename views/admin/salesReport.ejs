@@ -279,60 +279,6 @@ function formatOrderData(){
     return orderData; 
 }
 
-// function downloadPdf() {
-//             var table = document.getElementById('reportTable');
-//             var rows = [];
-
-//             // Get the table headers
-//             var headers = [];
-//             for (var i = 0; i < table.rows[0].cells.length; i++) {
-//                 headers.push(table.rows[0].cells[i].innerText);
-//             }
-//             rows.push(headers);
-
-//             // Get the table data
-//             for (var i = 1; i < table.rows.length; i++) {
-//                 var cells = [];
-//                 for (var j = 0; j < table.rows[i].cells.length; j++) {
-//                     cells.push(table.rows[i].cells[j].innerText);
-//                 }
-//                 rows.push(cells);
-//             }
-
-//             // Calculate the widths for each column based on the maximum content length
-//             var colWidths = headers.map((header, index) => {
-//                 let maxLength = header.length;
-//                 rows.forEach(row => {
-//                     if (row[index] && row[index].length > maxLength) {
-//                         maxLength = row[index].length;
-//                     }
-//                 });
-//                 // Set a base width per character and add some padding
-//                 return maxLength * 6 + 6; // 7 pixels per character and 20 pixels padding
-//             });
-
-//             var docDefinition = {
-//                 content: [
-//                     {
-//                         table: {
-//                             headerRows: 1,
-//                             widths: colWidths,
-//                             body: rows
-//                         },
-//                         layout: 'lightHorizontalLines' // Optional: Adds a light horizontal line to the table
-//                     }
-//                 ],
-//                 defaultStyle: {
-//                     fontSize: 10, // Reduce font size
-//                     wordBreak: 'break-word' // Ensure text wraps within cells
-//                 },
-//                 pageSize: 'A4',
-//                 pageOrientation: 'landscape',
-//                 pageMargins: [40, 60, 40, 60]
-//             };
-
-//             pdfMake.createPdf(docDefinition).download('SalesReport.pdf');
-//         }
-    
+ 
 </script>
 <%- include('./includes/adminFooter.ejs') %>

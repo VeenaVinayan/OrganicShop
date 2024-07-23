@@ -5,10 +5,10 @@ const Varient = require('../models/varient');
 const sharp = require('sharp');
 const fs =require('fs');
 const path = require('path');
-
+const PRODUCT_PER_PAGE = 8;
 module.exports = {
         adminProductView : async (req,res) => {
-           const PRODUCT_PER_PAGE = 5;
+          
            try {
                 const { search } = req.query
                 let page = Number(req.query.page);
@@ -43,9 +43,13 @@ module.exports = {
      },
      addProduct : async (req,res) => {
          try {
+              console.log("Product Add !!");
               const {productName,description,categoryId,brand,variantArray,rating} =req.body;
               const {cropImage0,cropImage1,cropImage2} = req.body;
-              
+              if(productName ==='' || description ==="" || categoryId === "" || brand ===""|| variantArray ==="" ||rating ===""){
+                  req.flash('error','Validation Error !');
+                  return res.redirect('/addProducts');
+              }
               for(let file of req.files){
                  if( file.mimetype !== 'image/jpg' &&
                    file.mimetype !== 'image/jpeg' &&
@@ -132,8 +136,12 @@ module.exports = {
 },
 editProduct: async (req,res) => {
 try{  
-    const {productName,productId,description,categoryId,brand,variantArray} = req.body;
+    const {productName,productId,description,categoryId,brand,variantArray,rating} = req.body;
     const {price,size,quantity,discount } = req.body ;
+    if(productName ==='' || description ==="" || categoryId === "" || brand ===""|| variantArray ==="" ||rating ===""){
+      req.flash('error','Validation Error !');
+      return res.redirect('/addProducts');
+    }
     const varient = price.map((_,index) =>({
           quantity:quantity[index],
           price:price[index],
@@ -157,29 +165,29 @@ try{
                         return res.redirect(`/editProduct/${existingProduct._id}`)
                 } 
             }
-            let img =[];
-            console.log("Images :: "+imagesSaved);
-            if(req.files){ 
-              req.files.forEach(element=>{
-                console.log("error inside !!");
-                img.push(element.filename)
-             });
-            } 
-            console.log("Existing Images ::"+img);
-         
+    let img =[];
+    console.log("Images :: "+imagesSaved);
+    if(req.files){ 
+        req.files.forEach(element=>{
+        console.log("error inside !!");
+        img.push(element.filename)
+    });
+  } 
+ console.log("Existing Images ::"+img);
+ 
         
-         if (!variant || !Array.isArray(variant)) {
-              return res.status(400).json({ message: 'Invalid product variants' });
-          }
-          if(cropImage0){
-            images = await cropImageDataExtract(cropImage0,img);
-            console.log("Inside Crop Image 0 !"+images);
-        } 
-        if(cropImage1){
-            images= await cropImageDataExtract(cropImage1,img);
-            console.log("Inside Crop Image 1 !"+images);
-        }
-           imagesSaved.push(...images);
+ if (!variant || !Array.isArray(variant)) {
+     return res.status(400).json({ message: 'Invalid product variants' });
+  }
+  if(cropImage0){
+      images = await cropImageDataExtract(cropImage0,img);
+      console.log("Inside Crop Image 0 !"+images);
+  } 
+  if(cropImage1){
+      images= await cropImageDataExtract(cropImage1,img);
+      console.log("Inside Crop Image 1 !"+images);
+  }
+     imagesSaved.push(...images);
     }
         const result = await Product.updateOne({'_id':productId},{
             $set:{
@@ -188,6 +196,7 @@ try{
                 category:categoryId,
                 brand:brand,
                 varient:varient,
+                rating:rating,
                 image:  imagesSaved,
             }
         });

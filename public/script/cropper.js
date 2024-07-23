@@ -1,99 +1,94 @@
-function handleImageSelect(event) {
+let cropper;
+const hidden= document.getElementById('hiddenContainer');
+const fileInput = document.getElementById('fileInput');
+const imageContainer = document.getElementById('imageContainer');
+const cropButton = document.getElementById('cropButton');
+const cropModal = document.getElementById('cropModal');
+const image = document.getElementById('image');
+const preview = document.getElementById('croppedImages');
+let index;
+// Image selection and display logic
+fileInput.addEventListener('change', (event) => {
     const files = event.target.files;
-    const selectedImagesContainer = document.getElementById('selectedImagesContainer');
-    selectedImagesContainer.innerHTML = '';
-  
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const reader = new FileReader();
-  
-      reader.onload = function (e) {
-        const image = document.createElement('img');
-        image.src = e.target.result;
-        image.classList.add('selected-image');
-  
-        // Assign a unique identifier to the image
-        const imageId = 'image_' + i;
-        image.setAttribute('id', imageId);
-  
-        image.addEventListener('click', function () {
-          openImagePopup(e.target.result, imageId);
-        });
-  
-        selectedImagesContainer.appendChild(image);
-      };
-  
-      reader.readAsDataURL(file);
+    imageContainer.innerHTML = ''; // Clear previous images
+    Array.from(files).forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const imgItem = document.createElement('div');
+            imgItem.className = 'col-md-3 image-item';
+            imgItem.innerHTML = `
+                <div class="row">
+                <div class="col-3">
+                <img src="${e.target.result}" alt="Image ${index + 1}">
+                </div>
+                <div class="col-3">   
+                <button class="btn btn-sm btn-primary m-2 showButton" data-index="${index}">Show</button>
+                </div>
+                </div>
+            `;
+            imageContainer.appendChild(imgItem);
+        };
+        reader.readAsDataURL(file);
+    });
+});
+
+// Modal display logic
+imageContainer.addEventListener('click', (event) => {
+    event.preventDefault();
+    if (event.target.classList.contains('showButton')) {
+        index = event.target.getAttribute('data-index');
+        const file = fileInput.files[index];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            image.src = e.target.result;
+            $('#cropModal').modal('show');
+            if (cropper) {
+                cropper.destroy();
+            }
+            cropper = new Cropper(image, {
+                aspectRatio: 1,
+                viewMode: 1,
+            });
+        };
+        reader.readAsDataURL(file);
     }
-  }
-  
-  function openImagePopup(imageSrc, imageId) {
-    const popupOverlay = document.createElement('div');
-    popupOverlay.classList.add('image-popup-overlay');
-  
-    const popupContainer = document.createElement('div');
-    popupContainer.classList.add('image-popup-container');
-  
-    const popupImage = document.createElement('img');
-    popupImage.classList.add('image-popup');
-    popupImage.src = imageSrc;
-    popupContainer.appendChild(popupImage);
-  
-    const cropButton = document.createElement('button');
-    cropButton.textContent = 'Crop';
-    cropButton.classList.add('crop-button');
-    cropButton.addEventListener('click', function () {
-      const cropper = new Cropper(popupImage, {
-        aspectRatio: 0, // Allow free-form cropping
-        crop: function (event) {
-          const croppedCanvas = cropper.getCroppedCanvas();
-          // Use the croppedCanvas for further processing or display
-          console.log(croppedCanvas);
-  
-          // Set the data attribute to mark the image as cropped
-          document.getElementById(imageId).dataset.cropped = 'true';
-        },
-      });
-  
-      const saveButton = document.createElement('button');
-      saveButton.textContent = 'Save';
-      saveButton.classList.add('save-button');
-      saveButton.addEventListener('click', function () {
-        const croppedCanvas = cropper.getCroppedCanvas();
-        const croppedImage = croppedCanvas.toDataURL('image/jpeg');
-        // Use the croppedImage for further processing or upload
-  
-        // Replace the original image with the cropped image
-        document.getElementById(imageId).src = croppedImage;
-        // Set the data attribute to mark the image as cropped
-        document.getElementById(imageId).dataset.cropped = 'true';
-  
-        // Remove the popup and overlay
-        document.body.removeChild(popupOverlay);
-      });
-  
-      popupContainer.appendChild(saveButton);
-    });
-  
-    popupContainer.appendChild(cropButton);
-  
-    popupOverlay.appendChild(popupContainer);
-    document.body.appendChild(popupOverlay);
-  
-    popupOverlay.addEventListener('click', function (event) {
-      if (event.target === popupOverlay) {
-        closeImagePopup(popupOverlay);
-      }
-    });
-  }
-  
-  function closeImagePopup(popupOverlay) {
-    document.body.removeChild(popupOverlay);
-  }
-  
-  function cancelForm() {
-    window.location.href = '/product';
-  }
-  
-  const fileInput = document.getElementById('images');
-  fileInput.addEventListener('change', handleImageSelect);
+});
+
+// Cropping logic
+cropButton.addEventListener('click', async () => {
+    const croppedCanvas = cropper.getCroppedCanvas();
+    const croppedImage = croppedCanvas.toDataURL('image/png');
+// display cropped Image  
+    const imgElement = document.createElement('img');
+    imgElement.src = croppedImage;
+    imgElement.className = 'img-thumbnail';
+    const imgWrapper = document.createElement('div');
+    imgWrapper.className = 'col-md-3';
+    imgWrapper.appendChild(imgElement);
+    preview.appendChild(imgWrapper);
+// Extract dimensions.
+    let dimension = cropper.getData();
+    const delimiter = '|';
+    const values = [ index,dimension.x , dimension.y , dimension.height , dimension.width ];
+    const imageData = values.join(delimiter);
+    console.log("Values = ",imageData);
+    createHiddenInput(index,imageData,hidden);
+    $('#cropModal').modal('hide');
+    cropper.destroy();
+});
+// Create hidden input field for storing cropped coordinates !!
+function createHiddenInput(index,data,parent){
+     const input = document.createElement('input');
+     console.log("INdex value ::"+index);
+     input.type ='hidden';
+     input.name ='cropImage'+index;
+     input.value = data;
+     console.log("Hidden Field"+input.value+input.name)
+     parent.appendChild(input);
+}
+// Ensure modal close button works
+$('.modal').on('hidden.bs.modal', function () {
+    if (cropper) {
+        cropper.destroy();
+    }
+});
