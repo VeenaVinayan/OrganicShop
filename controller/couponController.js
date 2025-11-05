@@ -1,3 +1,4 @@
+const { STATUS_CODE } = require('../constants/status_code');
 const Coupon = require('../models/coupon');
 const moment = require('moment');
 
@@ -43,10 +44,10 @@ module.exports={
         console.log("ID :: "+oid);
         await Coupon.updateOne({'_id':oid},
              {$set:{ isListed :false}});
-       res.status(200).json({success:true,message:"Successfully UnList !"});
+       res.status(STATUS_CODE.OK).json({success:true,message:"Successfully UnList !"});
     }catch(err){
         console.log("Error occured :: "+err);
-        res.status(500).json({error:true,message:"Error coccured !!"});
+        res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({error:true,message:"Error coccured !!"});
     }
   },
   listCoupon:async (req,res) => {
@@ -56,9 +57,9 @@ module.exports={
        const coupon = await Coupon.findOne({_id:id});
         coupon.isListed = !coupon.isListed;
        await coupon.save();
-       res.status(200).json({success:true,message:"Successfully Listed !"});
+       res.status(STATUS_CODE.OK).json({success:true,message:"Successfully Listed !"});
    }catch(err){
-      res.status(500).json({error:true,message:"Error coccured !!"});
+      res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({error:true,message:"Error coccured !!"});
    }
  },
   getEditCoupon: async (req,res) =>{

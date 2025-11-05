@@ -20,7 +20,7 @@ let info = await transporter.sendMail({
 });
   return info;
 }catch(error){
-    console.log("Error occured in SENd MAIL ::"+error.message);
+    console.log("Error occured in SEND MAIL ::"+error.message);
 }
 };
 

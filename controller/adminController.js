@@ -2,10 +2,10 @@ const User = require('../models/user');
 const Category = require('../models/category');
 const Order = require('../models/order');
 const moment = require('moment');
-//const alert = require('alert');
 const PER_PAGE = 10;
+const { ADMIN } = require('../constants/routes');
 module.exports = { 
-// Admin Home
+
   adminUserView : async (req,res) => {
         try{
                let page = Number(req.query.page);
@@ -19,7 +19,7 @@ module.exports = {
                     .limit(PER_PAGE)
                ]); 
                
-               res.render("./admin/adminUserView",{
+               res.render(ADMIN.ADMIN_USER_VIEW,{
                    title:'Admin Home',
                    user:users,
                    currentPage : page,
@@ -40,7 +40,7 @@ module.exports = {
          const user = await User.findOne({'_id':id});   
          user.isBlock = !user.isBlock;
          await user.save();    
-         redirect('/adminUserView');
+         redirect(ADMIN.ADMIN_USER_VIEW);
     }catch(err){
         console.log("Error occured !!" +err);
     }
@@ -48,10 +48,10 @@ module.exports = {
   category : async (req,res) => {
      const list = await Category.find();
      if(list){
-         res.render('./admin/categoryNew',{title:'Category',catList:list});
+         res.render(ADMIN.CATEGORY_NEW,{title:'Category',catList:list});
       }else{
            console.log("No Records found!!");
-           res.render('./admin/categoryNew',{title:Category,error:"No Records found"});
+           res.render(ADMIN.CATEGORY_NEW,{title:Category,error:"No Records found"});
       }
    },
    addCategory : async(req,res) =>{
@@ -60,13 +60,13 @@ module.exports = {
       const isExist = await Category.findOne({catName:name});
       if(isExist) {
          req.flash('error','Category exist!')
-         res.redirect('/category');
+         res.redirect(ADMIN.CATEGORY);
       }else {
        const newCategory = new Category({
           catName : name,
       })
        await newCategory.save();
-       res.redirect('/category');
+       res.redirect(ADMIN.CATEGORY);
     } 
     }catch(err){
        console.log("Error occured ::"+err);
@@ -103,13 +103,13 @@ module.exports = {
     editCategoryView : async (req,res) => {
          const {id} = req.params;
          const category = await Category.findById(id)
-         res.render('./admin/editCategory',{title:'Edit Category',category:category});
+         res.render(ADMIN.EDIT_CATEGORY,{title:'Edit Category',category:category});
     },
 
     editCategory : async (req,res) =>{
          const {categoryId }=req.body;
          await Category.findByIdAndUpdate(categoryId,{catName : req.body.catName});
-         res.redirect('/category');
+         res.redirect(ADMIN.CATEGORY);
     },
     viewCustomerOrders : async (req,res) => {
         try{
@@ -123,7 +123,7 @@ module.exports = {
                          .limit(PER_PAGE),
                    Order.find().count()
             ]);
-           res.render('./admin/viewOrders',{
+           res.render(ADMIN.VIEW_ORDERS,{
                  title:'Admin Order View',
                  admin : req.session.admin,
                  orders : orders,
@@ -144,7 +144,7 @@ module.exports = {
        try{
           const { id } = req.params;
           const order = await Order.findOne({'_id':id}).populate('items.product').populate('address');
-          res.render('./admin/orderDetails',{
+          res.render(ADMIN.ORDER_DETAILS,{
               order : order,
               admin : req.session.admin,
               moment : moment,

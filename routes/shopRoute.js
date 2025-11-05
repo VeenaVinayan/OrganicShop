@@ -7,7 +7,7 @@ const cart = require('../controller/cartController');
 const order = require('../controller/orderController');
 const search = require('../controller/searchController');
 const wallet = require('../controller/walletController');
-//const {isUnBlock} = require('../middlewares/isBlocked');
+//const isBlock = require('../middlewares/isBlocked');
 
 router.get('/',shop.getUserShop);
 router.get('/productDetails/:id',isAuth.isUser,shop.getProductDetails);

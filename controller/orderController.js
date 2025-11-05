@@ -9,6 +9,7 @@ const Wallet = require('../models/wallet');
 const User = require('../models/user');
 const coupon = require('../models/coupon');
 const { json } = require('body-parser');
+const { STATUS_CODE } = require('../constants/status_code');
 
 module.exports = {
      placeOrder : async (req,res) => {
@@ -214,7 +215,7 @@ module.exports = {
                       {$set: {status:'Cancelled',payStatus:false}}
                 );
                console.log("Update Results ::"+results);
-               res.status(200).json({success:true,message:"Order cancelled successfully ! "});
+               res.status(STATUS_CODE.OK).json({success:true,message:"Order cancelled successfully ! "});
           }catch(err){
                console.log("Error : "+err);
            }
@@ -249,7 +250,7 @@ module.exports = {
            const isValid = await Order.find({user:{$elemMatch: {$eq: userId}}});
            console.log("Is user used the coupon :: "+isValid);
            if(!userId){
-                res.status(400).json({error:true,message:"Cart not Found !! "});
+                res.status(STATUS_CODE.BAD_REQUEST).json({error:true,message:"Cart not Found !! "});
            }
            let discount;
            console.log("Values :: "+coupon + total);
@@ -267,7 +268,7 @@ module.exports = {
           }
      }catch(err){
           console.log("Error occured :: "+err);
-          res.status(500).json({error:true,message:"INternal server Error !! "});
+          res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({error:true,message:"INternal server Error !! "});
      }
      },
      returnProduct : async(req,res) =>{
@@ -298,10 +299,10 @@ module.exports = {
                  $push: { transactions: { amount: amount, status: 'Refund', type: 'credit' } }
                },
               );
-              res.status(200).json({success:true,message:"Return product Successfully!!"});  
+              res.status(STATUS_CODE.OK).json({success:true,message:"Return product Successfully!!"});  
         }catch(err){
             console.log(err);
-            res.status(500).json({error:true,message:"Error occured Return Product !!!!"});
+            res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({error:true,message:"Error occured Return Product !!!!"});
         } 
      },
    changeStatus : async(req,res) => {
@@ -311,10 +312,10 @@ module.exports = {
                await Order.updateOne({_id:id},
                     {$set:{payStatus:true,status:'Placed'}}
                );
-               res.status(200).json({success:true,message:"Retry payment Successfully !!"});
+               res.status(STATUS_CODE.OK).json({success:true,message:"Retry payment Successfully !!"});
              }catch(err){
                console.log('Error occured ::'+err);
-               res.status(500).json({error:true,message:"Error during Retry Payment  !!"});
+               res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({error:true,message:"Error during Retry Payment  !!"});
           }
      }
 }

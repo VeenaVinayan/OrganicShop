@@ -5,6 +5,7 @@ const Varient = require('../models/varient');
 const sharp = require('sharp');
 const fs =require('fs');
 const path = require('path');
+const { STATUS_CODE } = require('../constants/status_code');
 const PRODUCT_PER_PAGE = 8;
 module.exports = {
         adminProductView : async (req,res) => {
@@ -211,7 +212,7 @@ deleteProduct : async(req,res) =>{
         await Product.updateOne({_id:id},{
             $set:{ status:false  }
         });
-        res.status(200).json({success:true,message:"Successfully "})
+        res.status(STATUS_CODE.OK).json({success:true,message:"Successfully "})
     }catch(error){
         console.log(error);
     }

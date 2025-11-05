@@ -14,6 +14,7 @@ fileInput.addEventListener('change', (event) => {
     Array.from(files).forEach((file, index) => {
         const reader = new FileReader();
         reader.onload = (e) => {
+            alert(e.target.result);
             const imgItem = document.createElement('div');
             imgItem.className = 'col-md-3 image-item';
             imgItem.innerHTML = `

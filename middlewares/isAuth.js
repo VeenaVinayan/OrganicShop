@@ -1,6 +1,6 @@
 
 module.exports = {
-       isAdmin : (req,res,next) => {
+      isAdmin : (req,res,next) => {
            if(!req.session.admin){
                 req.session.admin= null;
                 console.log('Admin Loggedout!!!')
@@ -8,11 +8,10 @@ module.exports = {
            }else {
              next();
            }
-       },
-
-       isUser : (req,res,next) => {
+      },
+   isUser : (req,res,next) => {
         //if(req.session.user=== 'guest')
-         if(!req.session.user && !req.session.isBlockUser) {
+         if(!req.session.user) {
             console.log("User Logout !!");
             req.session.user= null;
             req.flash('error',"Please SignIn to view Product Details....");
@@ -20,5 +19,5 @@ module.exports = {
          }else{
            next();
          }
-       }
+      }
 }

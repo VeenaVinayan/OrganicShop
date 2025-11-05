@@ -3,6 +3,7 @@ const { json } = require('body-parser');
 const Cart = require('../models/cart');
 const Category = require('../models/category');
 const Product = require('../models/product');
+const { STATUS_CODE } = require('../constants/status_code');
 module.exports ={
   addToCart : async (req,res) => {
   try{
@@ -12,7 +13,7 @@ module.exports ={
          // alredy in cart
        if(isUser !== null){
             await Cart.updateOne({user:userId},{$push: {items: {product:product,size:size,quantity : quantity}}});
-            res.status(200).json({
+            res.status(STATUS_CODE.OK).json({
                  success: true,
                  message :'Product added to cart Successfully !',
                  newItem :true,
@@ -25,11 +26,11 @@ module.exports ={
                   });
         //To Get varient_id
         await newProduct.save();
-        // Update stock of the corresponding product !!! 
+    
        await Product.updateOne({'_id':product,'varient.size':size},
           {$inc : {'varient.$.quantity' : -1*quantity}},
          );
-         res.status(200).json({
+         res.status(STATUS_CODE.OK).json({
         success: true,
         message :'Successfully product added to cart !!',
        });
@@ -66,7 +67,7 @@ module.exports ={
        await Product.updateOne({'_id':id,'varient.size':size},
            {$inc: {'varient.$.quantity': qty}
        }); 
-     res.status(200).json({success:true,message:"Item removed successfully !"});
+     res.status(STATUS_CODE.OK).json({success:true,message:"Item removed successfully !"});
      }catch(err){
         console.log("Error occured !! "+err);
      }
@@ -76,7 +77,7 @@ module.exports ={
       const {product,size} = req.query;
       const {userId} = req.session;
       if(!product || !size || !userId){
-         res.status(500).json({error:true,message:""});
+         res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({error:true,message:""});
       }
       const varient = await Product.findOne({_id:product,'varient.size':size},{'varient.$':1});
       const stock = varient.varient[0].quantity;
@@ -92,9 +93,9 @@ module.exports ={
             discount:varient.varient[0].discount,
             price:varient.varient[0].price,
          }   
-         res.status(200).json(value);
+         res.status(STATUS_CODE.OK).json(value);
       }else{
-         res.status(500).json({error:true,message:"Product Stock not avilable"});
+         res.status(STATUS_CODE.BAD_REQUEST).json({error:true,message:"Product Stock not avilable"});
       }
       }catch(err){
          console.log("Error occured ::"+err);
@@ -118,11 +119,11 @@ module.exports ={
                discount:varient.varient[0].discount,
                price:varient.varient[0].price,
             }   
-            res.status(200).json(value);
+            res.status(STATUS_CODE.OK).json(value);
          
          }catch(err){
             console.log("Error occured ::"+err);
-            res.status(500).json({error:true,message:"Error occured !"});
+            res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json({error:true,message:"Error occured !"});
          } 
    }
 }

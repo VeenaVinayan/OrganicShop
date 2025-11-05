@@ -5,12 +5,14 @@ const {sendOtp,sendResetPassword} = require('../controller/otpController');
 const passport = require('passport');
 const shortId = require('shortid')
 const Wallet = require('../models/wallet');
-
 const salt = 10;
+const { AUTH, ADMIN } = require('../constants/routes');
+const { MESSAGES } = require('../constants/messages');
+const { STATUS_CODE } = require('../constants/status_code');
 
-module.exports =  {
+ module.exports =  {
     userSignupView : (req,res) => {
-        res.render('./auth/register',{title:'SignUp'});
+        res.render(AUTH.REGISTER,{title:'SignUp'});
     },
     userSignupSubmit : async (req,res) => {
            console.log("Inside signup submit !!! ")
@@ -18,7 +20,7 @@ module.exports =  {
            const isEmailAvilable = await User.findOne({email:email});
            if(isEmailAvilable){
                 req.flash('error' , " User Already Exist ! " );
-                res.redirect("/signup");
+                res.redirect(AUTH.SIGNUP);
             } else {
                 const codeReferal=shortId.generate();   // create Refferal code for  the user ! 
                 const otp = sendOtp(email);
@@ -44,7 +46,7 @@ module.exports =  {
                      req.session.code=code? code:null;
                  }
                   } 
-              res.redirect('/otpVerification');
+              res.redirect(AUTH.OTP_VERIFICATION);
             }     
      },
     userOtpSubmit : async (req,res) => {
@@ -53,13 +55,13 @@ module.exports =  {
         const currTime = new Date();
         const {val1,val2,val3,val4,val5,val6} = req.query;
         if(!val1 || !val2 || !val3 || !val4 || !val5 || !val6){
-           return res.status(400).json({error:"Input data Properly !"});
+           return res.status(STATUS_CODE.BAD_REQUEST).json({error:"Input data Properly !"});
         }
        const userOtp=val1+val2+val3+val4+val5+val6;
         const otpDB = await User.findOne({email:req.session.email,'token.otp':userOtp});
          if(!otpDB) {
              console.log("Invalid otp");
-             return res.status(400).json({error:"Invalid otp !"});
+             return res.status(STATUS_CODE.BAD_REQUEST).json({error:"Invalid otp !"});
           }
         console.log(otpDB);
         if(otpDB) {
@@ -88,7 +90,7 @@ module.exports =  {
                  return res.status(200).json({success:"Successfully Verified !!"});
                 }else {
                   console.log("Time out !"); 
-                  return res.status(408).json({error:"Time Out !"});
+                  return res.status(STATUS_CODE.REQUEST_TIMEOUT).json({error:MESSAGES.TIME_OUT});
                 }
           }  
         }catch(err){
@@ -97,7 +99,7 @@ module.exports =  {
    },
   // otp verification page
   userOtpView :   (req,res) =>{
-      res.render('./auth/otp',{title:'OTP'});
+      res.render(AUTH.OTP,{title:'OTP'});
    },
 
     //resend otp
@@ -107,7 +109,7 @@ module.exports =  {
           console.log(`Resend values :: ${otp} UpdateTime :: ${Date.now()}`);
           await User.updateOne({email:req.session.email},
            { $set: {  'token.otp': otp,'token.created' : Date.now()}    });
-           res.redirect('/otpVerification');
+           res.redirect(AUTH.OTP_VERIFICATION);
       }catch(err){
          consoel.log("Error occured ::"+err);
       }
@@ -115,7 +117,7 @@ module.exports =  {
 
    // Login View 
    loginView : (req,res) => {
-          res.render('./auth/loginUser',{title:'Login'});
+          res.render(AUTH.LOGIN_USER,{title:'Login'});
     },
   // Login submit 
    loginSubmit : async (req,res) =>{
@@ -124,17 +126,17 @@ module.exports =  {
          const user = await User.findOne({email:email});
          if(!user){
              req.flash('error',"Not a Registered User !")
-             res.redirect('/login');
+             res.redirect(AUTH.LOGIN);
          }else{
             const isPasswordmatch = await bcrypt.compare(password,user.password);
             if(user && user.isAdmin){
                if(isPasswordmatch){
                    req.session.admin = user.email;
-                   res.redirect('/adminHome');
+                   res.redirect(ADMIN.HOME);
                }else{
                    req.flash('error', " Invalid credentials ! ") ;
                    console.log('Invalid! passWord');
-                   res.redirect('/login');
+                   res.redirect(AUTH.LOGIN);
                 }
              }else if(user && user.isVerified && isPasswordmatch && !user.isBlock ){
                  req.session.user = user.email;
@@ -143,13 +145,13 @@ module.exports =  {
             }else if(user && !user.isVerified){
                req.flash('error' , "User doesn't Verified ! ");
                req.session.email=email;
-               res.redirect('/resendOtp');
+               res.redirect(AUTH.RESEND_OTP);
             }else if(user && user.isBlock){
                  req.flash('error',"You have been Blocked by Admin !!");
-                 res.redirect('/login');
+                 res.redirect(AUTH.LOGIN);
             }else{
               req.flash('error',"Invalid Credentials !")
-              res.redirect('/login');
+              res.redirect(AUTH.LOGIN);
           }
        }  
     },
@@ -163,25 +165,25 @@ module.exports =  {
         }
     },
      forgetPassword: async (req,res)=>{
-         res.render('./auth/forgotPassword');
+         res.render(AUTH.FORGOT_PASSWORD);
       },
      passwordReset: async(req,res) =>{
         const { email } = req.body;
         const user = await User.findOne({ email:email });
         if (!user) {
-           return res.status(400).send('User not found');
+           return res.status(STATUS_CODE.BAD_REQUEST).send('User not found');
         }
        const otp = sendResetPassword(email,user._id);
        await User.updateOne({email:email},
                             {$set: { 'token.otp':otp,
                                     'token.created': Date.now()}});
         req.session.email=email;                            
-       res.status(200).send('Password reset email successfully sent');
+       res.status(STATUS_CODE.OK).send('Password reset email successfully sent');
      },
      //LOADING RESET PAGE-------------------------------------------------------------
      loadResetPage :(req,res)=>{
          const {userID} = req.params;
-         res.render("./auth/passwordReset",{userId:userID})
+         res.render(AUTH.PASSWORD_RESET,{userId:userID})
      },
      saveResetPassword: async(req,res) =>{
         const { password,confirmPassword,userID } = req.body;
@@ -189,9 +191,8 @@ module.exports =  {
         if (user) {     
               try {
                     if (password !== confirmPassword) {
-                         return res.status(400).send('Passwords do not match');
+                         return res.status(STATUS_CODE.BAD_REQUEST).send('Passwords do not match');
                     }      
-                    // Hash the new password
                     const newPassword = await bcrypt.hash(password, 10);
                     await User.findOneAndUpdate(
                                  { _id: userID },
@@ -199,17 +200,17 @@ module.exports =  {
                                  { new: true}
                                );
                     req.flash('success',"Successfully changed Password !!");           
-                    res.redirect('/login');
+                    res.redirect(AUTH.LOGIN);
                 } catch (err) {
                                console.error(err);
-                               res.status(500).send('Failed to update password');
+                               res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).send('Failed to update password');
                   }
               }else{
-                  res.status(500).send('Failed to find user');
+                  res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).send('Failed to find user');
               }
        },
     otpView: async (req,res) =>{
-        res.render('./auth/otpForgot');
+        res.render(AUTH.OTP_FORGOT);
     },
     validateOtp: async (req,res) =>{
          const { otp } = req.params;
@@ -219,13 +220,12 @@ module.exports =  {
           const timeDifference = (new Date(currentTime) - isValid.token.created)/1000/60 ;
        
             if(timeDifference <= 1){
-               return res.status(200).json({success:'SUccessfully Verified OTP !',userID:isValid._id});
+               return res.status(STATUS_CODE.OK).json({success:MESSAGES.OTP_VERIFIED,userID:isValid._id});
             }else{
-              console.log("Time out!!");
-               return res.status(408).json({error:"Time OUT !!"});
+               return res.status(STATUS_CODE.REQUEST_TIMEOUT).json({error:MESSAGES.TIME_OUT});
             }
         }else{
-          return res.status(400).json({error:"INvalid OTP !"});
+          return res.status().json({error:MESSAGES.INVALID_OTP});
         }
     }   
   }   
