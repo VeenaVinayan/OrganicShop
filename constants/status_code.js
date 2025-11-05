@@ -14,5 +14,4 @@ const STATUS_CODE ={
     SERVICE_UNAVAILABLE: 503,
 }
 
-
 module.exports = { STATUS_CODE};
