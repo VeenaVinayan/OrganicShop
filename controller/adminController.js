@@ -3,7 +3,7 @@ const Category = require('../models/category');
 const Order = require('../models/order');
 const moment = require('moment');
 const PER_PAGE = 10;
-const { ADMIN } = require('../constants/routes');
+const { ADMIN } = require('../constants/route');
 module.exports = { 
 
   adminUserView : async (req,res) => {

@@ -6,7 +6,7 @@ const passport = require('passport');
 const shortId = require('shortid')
 const Wallet = require('../models/wallet');
 const salt = 10;
-const { AUTH, ADMIN } = require('../constants/routes');
+const { AUTH, ADMIN } = require('../constants/route');
 const { MESSAGES } = require('../constants/messages');
 const { STATUS_CODE } = require('../constants/status_code');
 
@@ -155,7 +155,7 @@ const { STATUS_CODE } = require('../constants/status_code');
           }
        }  
     },
-    // Logout
+    
    logout : (req,res) => {
        try{
            req.session.admin = null;
@@ -165,7 +165,7 @@ const { STATUS_CODE } = require('../constants/status_code');
         }
     },
      forgetPassword: async (req,res)=>{
-         res.render(AUTH.FORGOT_PASSWORD);
+         res.render('./auth/forgotPassword');
       },
      passwordReset: async(req,res) =>{
         const { email } = req.body;
