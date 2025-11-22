@@ -30,7 +30,7 @@
     "uuid": "^9.0.1"
   },
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "node server.js"
   },
   "name": "organicshop",
   "version": "1.0.0",
