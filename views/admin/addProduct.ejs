@@ -92,8 +92,7 @@
         </div>
     </div>
 </section>
-  <!-- Modal for Add varient -->
-  <div class="modal fade" id="variantModal" tabindex="-1" role="dialog" aria-labelledby="variantModalLabel" aria-hidden="true">
+<div class="modal fade" id="variantModal" tabindex="-1" role="dialog" aria-labelledby="variantModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
           <div class="modal-header">
@@ -192,7 +191,7 @@
               errorQuantity.innerHTML = "Invalid Quantity !";
               return;
         }
-        if( isNaN(discount)|| discount <=-1 || discount >15 || discount ===''){
+        if(isNaN(discount)|| discount <=-1 || discount >15 || discount ===''){
               errorDiscount.style.display ="block";
               errorDiscount.innerHTML = "Invalid Discount !";
               return;
@@ -254,8 +253,8 @@
             </div>
         </div>
     </div>
-`;
-     container.appendChild(variantDiv);
+ `;
+  container.appendChild(variantDiv);
  }
 
  function deleteVarient(element){

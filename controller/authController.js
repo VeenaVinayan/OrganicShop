@@ -155,7 +155,7 @@ const { STATUS_CODE } = require('../constants/status_code');
           }
        }  
     },
-    
+    // Logout
    logout : (req,res) => {
        try{
            req.session.admin = null;
@@ -180,7 +180,7 @@ const { STATUS_CODE } = require('../constants/status_code');
         req.session.email=email;                            
        res.status(STATUS_CODE.OK).send('Password reset email successfully sent');
      },
-     //LOADING RESET PAGE-------------------------------------------------------------
+   
      loadResetPage :(req,res)=>{
          const {userID} = req.params;
          res.render(AUTH.PASSWORD_RESET,{userId:userID})

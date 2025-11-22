@@ -81,18 +81,18 @@
                             <label class="form-label">Create password</label>
                             <input class="form-control" placeholder="Password" type="password"  name="password" id="password" oninput="validatePassword(this)">
                             <div class="alert-danger" style="display: none;" role="alert" id="pwdError"></div>
-                        </div> <!-- form-group// -->
+                        </div> 
                         <div class="mb-3">
                             <label class="form-label">Confirm password</label>
                             <input class="form-control" placeholder="Password" type="password"  name="con-password" oninput="validateConfirmPassword(this)">
                             <div class="alert-danger" style="display: none;" role="alert" id="conPwdError"></div>
-                        </div> <!-- form-group// -->
+                        </div> 
                         <div class="mb-3">
                             <p class="small text-center text-muted">By signing up, you confirm that you’ve read and accepted our User Notice and Privacy Policy.</p>
-                        </div> <!-- form-group  .// -->
+                        </div>
                         <div class="mb-4">
                             <input type="submit" class="btn btn-primary w-100" value="Sign Up"> 
-                        </div> <!-- form-group// -->
+                        </div> 
                     </form>
                     <p class="text-center small text-muted mb-15">or sign up with</p>
                     <div class="d-flex gap-2 mb-4">
@@ -167,13 +167,13 @@
             }
         }
         function validatePassword(input) {
-             const exp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-             const value = input.value.trim();
+            const exp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            const value = input.value.trim();
             if (value.length < 8 || value.length > 20 || exp.test(value) || value ==="") {
-                input.setCustomValidity("Password must be between 8 and 12 characters.");
+                input.setCustomValidity("Password must be between 8 and 20 characters.");
                 pwdError.style.display="block";
                 pwd.innerHTML="Phone Number validation error";
-            } else {
+            }else {
                 input.setCustomValidity("");
                 showErrorMessage(input, "");
             }
@@ -197,6 +197,6 @@
             messageDiv.style.display = message ? 'block' : 'none';
         }
       
- </script>
-</body>
+  </script>
+ </body>
 </html>

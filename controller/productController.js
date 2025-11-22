@@ -7,10 +7,10 @@ const fs =require('fs');
 const path = require('path');
 const { STATUS_CODE } = require('../constants/status_code');
 const PRODUCT_PER_PAGE = 8;
+
 module.exports = {
         adminProductView : async (req,res) => {
-          
-           try {
+            try {
                 const { search } = req.query
                 let page = Number(req.query.page);
                 if (isNaN(page) || page < 1) {
@@ -18,7 +18,7 @@ module.exports = {
                 }
                 const [ productsCount ,products] = await  Promise.all ([
                           Product.countDocuments(),
-                          Product.find().populate( 'category' )
+                          Product.find().populate('category' )
                           .skip(( page - 1 ) * PRODUCT_PER_PAGE ).limit(PRODUCT_PER_PAGE )
                 ]);
                
@@ -38,11 +38,11 @@ module.exports = {
             console.log(error);
        }
    },
-     addProductView : async (req,res) => {
+    addProductView : async (req,res) => {
            const categories = await Category.find({catStatus:true});
            res.render('./admin/addProduct',{title:'Add Products',values:categories});
-     },
-     addProduct : async (req,res) => {
+    },
+    addProduct : async (req,res) => {
          try {
               console.log("Product Add !!");
               const {productName,description,categoryId,brand,variantArray,rating} =req.body;
@@ -52,7 +52,7 @@ module.exports = {
                   return res.redirect('/addProducts');
               }
               for(let file of req.files){
-                 if( file.mimetype !== 'image/jpg' &&
+                 if(file.mimetype !== 'image/jpg' &&
                    file.mimetype !== 'image/jpeg' &&
                    file.mimetype !== 'image/png' &&
                    file.mimetype !== 'image/gif'){
@@ -80,8 +80,7 @@ module.exports = {
             if(cropImage2){
                 images= await cropImageDataExtract(cropImage2,img);
             } 
-           //After cropping images...
-        
+                
             const product = new Product({
                   productName : productName,
                   description : description,
@@ -174,9 +173,7 @@ try{
         img.push(element.filename)
     });
   } 
- console.log("Existing Images ::"+img);
- 
-        
+       
  if (!variant || !Array.isArray(variant)) {
      return res.status(400).json({ message: 'Invalid product variants' });
   }
@@ -216,10 +213,9 @@ deleteProduct : async(req,res) =>{
     }catch(error){
         console.log(error);
     }
-},
+ },
 }
 
-// Function to split array into chunks of specified size and assign 
 function splitArrayToObjects(array, chunkSize, keys) {
     const chunks = [];
     for (let i = 0; i < array.length; i += chunkSize) {
@@ -237,15 +233,12 @@ function splitArrayToObjects(array, chunkSize, keys) {
  function cropImageDataExtract(cropImage, image) {
    return new Promise((resolve,reject) => { 
    try {
-     console.log("Inside crop image using sharp !!");
-     
      const delimiter = '|';
      let parts = cropImage.split(delimiter);
  
      if (parts.length < 5) {
        throw new Error("Invalid cropImage format");
      }
- 
      let index = parseInt(parts[0]);
      let x = parseInt(parts[1]);
      let y = parseInt(parts[2]);
@@ -261,8 +254,6 @@ function splitArrayToObjects(array, chunkSize, keys) {
      }
  
      const file = image[index];
-     console.log("File :: " + file);
- 
      let inputPath = path.join(__dirname, `../public/images/productImages/${file}`);
      let outputPath = path.join(__dirname, `../public/images/productImages/cropped_${file}`);
      console.log(`Values :: ${parts} Input Path :: ${inputPath} Output Path :: ${outputPath}`);
@@ -279,12 +270,12 @@ function splitArrayToObjects(array, chunkSize, keys) {
            resolve(image);
          }
        });
-   } catch (err) {
+   }catch (err) {
      console.log("Error occurred in try-catch :::::" + err);
      reject(err);
    }
-}) ;
- }
+});
+}
  
 
 
