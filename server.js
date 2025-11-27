@@ -29,6 +29,11 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static(path.join(__dirname,'public')));
 app.use('/shop',express.static(path.join(__dirname,'public','shop')));
+app.use((req, res, next) => {
+  res.locals.currentRoute = req.path;
+  next();
+});
+
 app.use(router);
 app.use(authRouter);
 app.use(shopRoute);
