@@ -1,5 +1,5 @@
-<%- include('Header.ejs') %>
-<%- include('Navbar.ejs') %>
+<%- include('Header') %>
+<%- include('Navbar') %>
 
 <section class="content-main">
   <div class="content-header">
@@ -88,8 +88,9 @@
                fetch(`/blockUser?id=${userId}`,{method:'PATCH'})
                .then(res => {
                        Swal.fire("Successfully Block User!");
+                       window.location.reload(); 
                  }) ;
-               window.location.reload();              
+                 
           }  
             }).catch((err)=>{
                 console.log(err);

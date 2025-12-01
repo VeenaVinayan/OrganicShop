@@ -10,7 +10,7 @@ const wallet = require('../controller/walletController');
 //const isBlock = require('../middlewares/isBlocked');
 
 router.get('/',shop.getUserShop);
-router.get('/productDetails/:id',isAuth.isUser,shop.getProductDetails);
+router.get('/productDetails/:id',shop.getProductDetails);
 router.get('/userSignout',shop.signout);
 router.get('/categorySearch/:id',shop.getCategoryProducts);
 router.get('/organiclife',shop.viewGuestPage);

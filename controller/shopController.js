@@ -20,9 +20,9 @@ module.exports = {
                Category.find({catStatus:true},'_id catName'),
                Cart.findOne({user:req.session.userId}),
                Product.find({status:true},'productName varient image ')
-               .sort({productName:-1})
-               .skip((page-1)*PER_PAGE)
-               .limit(PER_PAGE),
+                 .sort({productName:-1})
+                 .skip((page-1)*PER_PAGE)
+                 .limit(PER_PAGE),
                Product.countDocuments({status:true})
          ]);
          let cartCount = cart?cart.items.length:0;
@@ -36,26 +36,37 @@ module.exports = {
                     totalPages : Math.ceil(count / PER_PAGE),
                });       
      },
-     getProductDetails : async (req,res) => {
-        try {   
-          const {id}= req.params;
-          const {userId,user}=req.session;
-          const[product,category,cart] = await Promise.all([  
-             Product.findOne({_id:id}).populate('category'),
-             Category.find(),
-             Cart.findOne({_id:userId})
-          ]);  
-          let count = cart?cart.items.length:0;             
-          res.render('./shop/productDetails',{
-               user: user,
-               product: product,
-               category: category,
-               count : count,
-          });
-     }catch(err){
-          console.log("Error occured ::"+err);
-     } 
- },
+getProductDetails : async (req,res) => {
+  try {   
+    const { id } = req.params;
+    const userId = req.session?.userId || null;
+    const user = req.session?.user || null;
+
+    const [product, category] = await Promise.all([
+      Product.findOne({ _id: id }).populate('category'),
+      Category.find()
+    ]);
+
+    let cart = null;
+    if (userId) {
+      cart = await Cart.findOne({ userId: userId });
+    }
+
+    let count = cart ? cart.items.length : 0;
+
+    res.render('./shop/productDetails', {
+      user: user,         
+      product: product,
+      category: category,
+      count : count       
+    });
+
+     } catch (error) {
+     console.log(error);
+     res.status(500).send('Server Error');
+     }
+  },
+
      signout: async (req,res) => {
          req.session.user = null;
          res.redirect('/');
@@ -83,7 +94,7 @@ module.exports = {
           count:count,
           currentPage:page,
           totalPages:Math.ceil(totalPages/PER_PAGE),
-  });
+       });
        }catch(err){
             console.log(err);
         }
@@ -174,6 +185,7 @@ module.exports = {
           const cartCount = cart? cart.items.length : 0 ;
           res.render('./shop/userProfile',{
                user:req.session.user,
+               currentRoute:req.url,
                category : category,
                userData : userData,
                address:address,
@@ -215,6 +227,7 @@ module.exports = {
           let cartCount = cart?cart.items.length:0; 
           res.render('./shop/editProfile',{
                user:req.session.user,
+               currentRoute:req.url,
                category : category,
                userData : userData,
                count: cartCount,

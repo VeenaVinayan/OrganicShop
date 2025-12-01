@@ -46,7 +46,7 @@
               <tr>
                 <th scope="row"><%= ++index %></th>
                 <td><%= moment(row.date).format('DD-MM-YYYY') %></td>
-                <td><%= row._id %></td>
+                <td>ORD-<%= row._id.toString().slice(-8).toUpperCase() %></td>
                 <td><%= row.amount %></td>
                 <td><%= row.status %></td>
                 <% if(row.status !=='Delivered' && row.status !== 'Shipped' && row.status !== 'Cancelled' && row.status !== 'Return') { %>

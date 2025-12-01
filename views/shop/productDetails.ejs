@@ -17,18 +17,24 @@
             border-color: #444546;
         }
 </style>
-<div class="text-center ">
-<nav aria-label="breadcrumb" class="d-inline-block bg-light p-2">
+ <div class="text-center ">
+ <nav aria-label="breadcrumb" class="d-inline-block bg-light p-2">
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="/userShop">Home</a></li>
     <li class="breadcrumb-item"><a href="/userShop"></a><%= product.category.catName %></li>
     <li class="breadcrumb-item active" aria-current="page"><%= product.productName %></li>
   </ol>
-</nav>
+ </nav>
 </div>
+
+<%  if(message.error) { %>
+  <div class="alert alert-danger" role="alert">
+     <%= message.error %>
+  </div>
+<% } %>
 <section class="section-content padding-y bg">
 <div class="container">
-<!-- ============================ COMPONENT 1 ================================= -->
+
 <div class="alert alert-success" id="showMessage" role="alert" style="display: none;"></div>
 <div class="card">
 	<div class="row no-gutters">
@@ -36,12 +42,11 @@
 <article class="gallery-wrap"> 
 <div class="img-big-wrap" class="image-container">
 	   <a href="#"><img src="/images/productImages/<%= product.image[0] %>" id="mainImage"></a>
-</div> <!-- img-big-wrap.// -->
-</article> <!-- gallery-wrap .end// -->
+</div> 
+</article> 
 		  <img src="/images/productImages/<%= product.image[1] %>" class="thumbnail" onclick="changeImage('<%= product.image[1] %>')" style="width: auto; height: 100px; margin-inline: 10px; border: 1px solid rgb(193, 193, 193); border-radius: 15px;" alt="Product Images">
-		  <img src="/images/productImages/<%= product.image[2] %>" class="thumbnail" onclick="changeImage('<%= product.image[2] %>')" style="width: auto; height: 100px; margin-inline: 10px; border: 1px solid rgb(193, 193, 193); border-radius: 15px;" alt="Product Images">
-  </aside>
-        <main class="col-md-6 border-left">
+		  <img src="/images/productImages/<%= product.image[2] %>" class="thumbnail" onclick="changeImage('<%= product.image[2] %>')" style="width: auto; height: 100px; margin-inline: 10px; border: 1px solid rgb(193, 193, 193); border-radius: 15px;" alt="Product Images"> </aside>
+<main class="col-md-6 border-left">
 <article class="content-body">
 <h2 class="title"><%= product.brand %></h2>
 <h5 class="text-muted" id="pname"><%= product.productName %></h2>
@@ -93,10 +98,10 @@
       <%  }  %>  
     <hr>
 	<a href="#" onclick="addToCart('<%= product._id %>')" class="btn  btn-secondary"> <span class="text">Add to cart</span> <i class="fas fa-shopping-cart"></i>  </a>
-  </article> <!-- product-info-aside .// -->
-		</main> <!-- col.// -->
-	</div> <!-- row.// -->
-</div> <!-- card.// -->
+  </article> 
+		</main> 
+	</div> 
+</div> 
 <!-- ============================ COMPONENT 1 END .// ================================= -->
 
 <br>
