@@ -165,18 +165,33 @@
                 showErrorMessage(input, "");
             }
         }
+        // function validatePassword(input) {
+        //     const exp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        //     const value = input.value.trim();
+        //     if (value.length < 8 || value.length > 20 || !exp.test(value) || value ==="") {
+        //         input.setCustomValidity("Password must be between 8 and 20 characters.");
+        //         pwdError.style.display="block";
+        //         pwd.innerHTML="Password validation error";
+        //     }else {
+        //         input.setCustomValidity("");
+        //         showErrorMessage(input, "");
+        //     }
+        // }
         function validatePassword(input) {
-            const exp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-            const value = input.value.trim();
-            if (value.length < 8 || value.length > 20 || exp.test(value) || value ==="") {
-                input.setCustomValidity("Password must be between 8 and 20 characters.");
-                pwdError.style.display="block";
-                pwd.innerHTML="Phone Number validation error";
-            }else {
-                input.setCustomValidity("");
-                showErrorMessage(input, "");
-            }
-        }
+    const exp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const value = input.value.trim();
+
+    if (value.length < 8 || value.length > 20 || !exp.test(value) || value === "") {
+        input.setCustomValidity("Password must be 8-20 characters, include uppercase, lowercase, number and special character.");
+        pwdError.style.display = "block";
+        pwdError.innerHTML = "Password validation error";
+    } else {
+        input.setCustomValidity("");
+        pwdError.style.display = "none";
+        pwdError.innerHTML = "";
+    }
+}
+
         function validateConfirmPassword(input) {
             const password = document.getElementById('password').value.trim();
             const value = input.value.trim();
@@ -195,7 +210,6 @@
             messageDiv.textContent = message;
             messageDiv.style.display = message ? 'block' : 'none';
         }
-      
   </script>
  </body>
 </html>

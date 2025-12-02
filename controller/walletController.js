@@ -17,7 +17,25 @@ module.exports ={
              Category.find({catStatus:true},'_id catName'),
              Cart.findOne({user:userId}),
            ]);
-          
+          // const [userData, wallet, category, cart] = await Promise.all([
+          // User.findById(userId),
+          // Wallet.aggregate([
+          // { $match: { user: userId } },
+          // { $unwind: "$transactions" },
+          // { $sort: { "transactions.date": -1 } },
+          // { $limit: 10 },
+          // { $group: {
+          //      _id: "$_id",
+          //      user: { $first: "$user" },
+          //      balance: { $first: "$balance" },
+          //      referalCode:{$first: "$referalCode"},
+          //      transactions: { $push: "$transactions" }
+          // }}
+          // ]),
+          // Category.find({ catStatus: true }, "_id catName"),
+          // Cart.findOne({ user: userId }),
+          // ]);
+ 
           let cartCount = cart ? cart.items.length :0;
           res.render('./shop/wallet',{
                 userData : userData,

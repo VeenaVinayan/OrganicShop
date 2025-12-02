@@ -262,7 +262,7 @@ module.exports = {
                  }
                  let totalAmount = total-discount;
                  console.log("Total Amount :: Discount :: "+totalAmount,discount);
-                 res.json({coupon:couponData._id,discountAmount:discount,total:totalAmount}); 
+                 res.json({coupon:couponData._id,name:couponData.coupon,discountAmount:discount,total:totalAmount}); 
           }else{
                res.json({error:true,message:"You are not eligible to apply coupon !"});
           }

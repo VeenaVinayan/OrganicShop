@@ -7,14 +7,9 @@
     <div class="row">
     <aside class="col-md-3">
         <ul class="list-group">
-        <% 
-            // Ensure activeRoute is defined, defaults to an empty string
-            const activeRoute = typeof currentRoute !== 'undefined' ? currentRoute : ''; 
-        %>
-            <% /* List Group Menu with Active Class Logic */ %>
-            <a class="list-group-item <%= activeRoute === '/userProfile' ? 'active' : '' %>" href="/userProfile">My Profile </a>
-            <a class="list-group-item <%= activeRoute === '/editUserProfile' ? 'active' : '' %>" href="/editUserProfile">Edit Profile </a>
-            <a class="list-group-item <%= activeRoute === '/userOrder' ? 'active' : '' %>" href="/userOrder">Orders</a>
+            <a class="list-group-item active" href="/userProfile">My Profile </a>
+            <a class="list-group-item " href="/editUserProfile">Edit Profile </a>
+            <a class="list-group-item " href="/userOrder">Orders</a>
         </ul>
         <br>
         <a class="btn btn-light btn-block" href="/logout"> <i class="fa fa-power-off"></i> <span class="text">Log out</span> </a> 

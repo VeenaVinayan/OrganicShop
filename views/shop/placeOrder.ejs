@@ -5,55 +5,7 @@
     <section class="section-content padding-y bg">
         <div class="row">
             <main class="col-lg-8">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h4 class="card-title mb-4">Choose Delivery Address</h4>
-                        <form id="addressSelectionForm"> 
-                            <div class="row">
-                                <% if(address && address.length > 0) { %>
-                                    <% address.forEach((row,index) => { %>
-                                        <% const isFirst = (index === 0) %>
-                                        <div class="col-md-3 mb-3"> 
-                                            <div class="card border p-3 h-100">
-                                                <div class="form-check">
-                                                    <input type="radio" 
-                                                           name="address" 
-                                                           class="form-check-input" 
-                                                           value="<%= row._id %>" 
-                                                           id="address_<%= row._id %>" 
-                                                           form="orderForm"
-                                                           <%= isFirst ? 'checked' : '' %>
-                                                    >
-                                                    <label class="form-check-label" for="address_<%= row._id %>">
-                                                        <h5 class="mb-1 <%= isFirst ? 'text-primary' : '' %>"><%= row.type %> <%= isFirst ? '(Default)' : '' %></h5>
-                                                        <p class="small mb-0">
-                                                            <%= row.firstName + " " + row.lastName %><br>
-                                                            <%= row.house %>, <%= row.landMark %><br>
-                                                            <%= row.street %>, <%= row.palce %><br>
-                                                            <%= row.city %>, <%= row.state %> - <%= row.pincode %><br>
-                                                            <%= row.country %><br>
-                                                            Phone: <%= row.mobile %>
-                                                        </p>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    <% }) %>
-                                <% } else { %>
-                                    <div class="col-12"><p class="text-danger">No saved addresses found. Please add one.</p></div>
-                                <% } %>
-                            </div>
-                        </form>
-                        
-                        <div class="mt-3">
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addressShow">
-                                Add New Address
-                            </button>
-                        </div>
-                        <div role="alert" class="alert-danger mt-3" id="errorAddress" style="display:none;"></div>
-                    </div>
-                </div>
-
+              
                 <article class="card mb-4">
                     <div class="card-body">
                         <h4 class="card-title mb-4">Cart Details</h4>
@@ -142,6 +94,55 @@
                         </div>
                     </div>
                 </article>
+                  <div class="card mb-4">
+                    <div class="card-body">
+                        <h4 class="card-title mb-4">Choose Delivery Address</h4>
+                        <form id="addressSelectionForm"> 
+                            <div class="row">
+                                <% if(address && address.length > 0) { %>
+                                    <% address.forEach((row,index) => { %>
+                                        <% const isFirst = (index === 0) %>
+                                        <div class="col-md-3 mb-3"> 
+                                            <div class="card border p-3 h-100">
+                                                <div class="form-check">
+                                                    <input type="radio" 
+                                                           name="address" 
+                                                           class="form-check-input" 
+                                                           value="<%= row._id %>" 
+                                                           id="address_<%= row._id %>" 
+                                                           form="orderForm"
+                                                           <%= isFirst ? 'checked' : '' %>
+                                                    >
+                                                    <label class="form-check-label" for="address_<%= row._id %>">
+                                                        <h5 class="mb-1 <%= isFirst ? 'text-primary' : '' %>"><%= row.type %> <%= isFirst ? '(Default)' : '' %></h5>
+                                                        <p class="small mb-0">
+                                                            <%= row.firstName + " " + row.lastName %><br>
+                                                            <%= row.house %>, <%= row.landMark %><br>
+                                                            <%= row.street %>, <%= row.palce %><br>
+                                                            <%= row.city %>, <%= row.state %> - <%= row.pincode %><br>
+                                                            <%= row.country %><br>
+                                                            Phone: <%= row.mobile %>
+                                                        </p>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <% }) %>
+                                <% } else { %>
+                                    <div class="col-12"><p class="text-danger">No saved addresses found. Please add one.</p></div>
+                                <% } %>
+                            </div>
+                        </form>
+                        
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addressShow">
+                                Add New Address
+                            </button>
+                        </div>
+                        <div role="alert" class="alert-danger mt-3" id="errorAddress" style="display:none;"></div>
+                    </div>
+                </div>
+
             </main> 
             
             <aside class="col-lg-4">
@@ -248,8 +249,94 @@
         </div>
     </section>
   </div>
- <div class="modal fade" id="addressShow" tabindex="-1" aria-labelledby="addressShowLabel" aria-hidden="true">
+<div class="modal fade" id="addressShow" tabindex="-1" aria-labelledby="addressShowLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addressShowLabel">Add New Address</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addAddressForm" action="/address" method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>First Name</label>
+                            <input type="text" name="firstName" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Last Name</label>
+                            <input type="text" name="lastName" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                          <label class="form-label" for="form11Example6"> Address Type </label>
+                            <div data-mdb-input-init class="form-outline mb-4 p-2 form-grop d-flex row">
+                            <div class="form-check ">
+                                <input class="form-check-input" type="radio" name="type" id="exampleRadios1" value="Home" checked>
+                                <label class="form-check-label" for="exampleRadios1">
+                                Home
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="type" id="exampleRadios2" value="Office">
+                                <label class="form-check-label" for="exampleRadios2">
+                                Office
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="type" id="rbOther" value="Other">
+                                <label class="form-check-label" for="exampleRadios3">
+                                Other
+                                </label>
+                            </div>    
+                         </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>House / Flat</label>
+                            <input type="text" name="house" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Landmark</label>
+                            <input type="text" name="landMark" class="form-control">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Street</label>
+                            <input type="text" name="street" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Place</label>
+                            <input type="text" name="place" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>City</label>
+                            <input type="text" name="city" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>State</label>
+                            <input type="text" name="state" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Pincode</label>
+                            <input type="text" name="pincode" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Country</label>
+                            <input type="text" name="country" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Mobile</label>
+                            <input type="text" name="mobile" class="form-control" required>
+                        </div>
+                        <div class="col-12 text-end">
+                               <input type="hidden" name="userId" value="<%= cart.user %>" />
+                            <button type="submit" class="btn btn-primary">Save Address</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
+
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
@@ -260,7 +347,6 @@
             // If the coupon container is visible and has a value, use the amount after coupon
             return parseFloat(finalElement.textContent.trim().replace('₹', ''));
         }
-        // Otherwise, use the initial final total amount
         return parseFloat(document.getElementById('initialTotalAmount').value); 
     }
 
@@ -314,7 +400,7 @@
     
     function updateCouponData(data){
         document.getElementById("couponContainer").style.display="block"; 
-        document.getElementById('couponName').innerText = data.coupon;
+        document.getElementById('couponName').innerText = data.name;
         document.getElementById('damount').innerText = `- ₹${data.discountAmount.toFixed(2)}`;
         // Update the Final Payable Total display in the summary
         document.getElementById('amountAfterCoupon').innerText = `₹${data.total.toFixed(2)}`; 
@@ -409,7 +495,6 @@ document.getElementById('orderForm').addEventListener('submit', async (e) => {
                 e.target.submit(); // Submit the form after successful payment
             },
             prefill: {
-                // Assuming userData object is passed from server
                 name: "<%= userData.name %>",
                 email: "<%= userData.email %>", 
                 contact: "<%= userData.mobile %>",
@@ -434,6 +519,49 @@ document.getElementById('orderForm').addEventListener('submit', async (e) => {
         })
     }
 });
+
+// document.getElementById('addAddressForm').addEventListener('submit', async function(e){
+//     e.preventDefault();
+
+//     const form = e.target;
+//     const formData = new FormData(form);
+//     const data = Object.fromEntries(formData.entries());
+//     formData.append("userId",cart.user)
+
+//     try {
+//         const response = await fetch('/address', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//             body: JSON.stringify(data),
+//         });
+
+//         const result = await response.json();
+
+//         if(result.success){
+//             // Close the modal
+//             const modal = bootstrap.Modal.getInstance(document.getElementById('addressShow'));
+//             modal.hide();
+
+//             // Add the new address dynamically to the address list
+//             addNewAddressToList(result.address);
+
+//             // Optionally show success message
+//             Swal.fire({
+//                 icon: 'success',
+//                 title: 'Address added!',
+//                 showConfirmButton: false,
+//                 timer: 1500
+//             });
+//         } else {
+//             alert(result.error || "Something went wrong!");
+//         }
+//     } catch(err){
+//         console.error(err);
+//     }
+// });
+
 </script>
 
 <%- include('footer') %>

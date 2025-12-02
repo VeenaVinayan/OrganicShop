@@ -29,7 +29,7 @@ router.patch('/returnProduct/:id',isAuth.isUser,order.returnProduct);
 router.patch('/changeStatus/:id',isAuth.isUser,order.changeStatus);
 //User Profile
 router.get('/userProfile',isAuth.isUser,shop.getUserProfile);
-router.post('/saveAddress',isAuth.isUser,shop.saveAddress);
+router.post('/address',isAuth.isUser,shop.saveAddress);
 router.get('/editUserProfile',isAuth.isUser,shop.editUserProfile);
 router.post('/saveEditProfile',isAuth.isUser,shop.saveEditProfile);
 router.get('/editAddress/:id/:adId',isAuth.isUser,shop.editAddress);

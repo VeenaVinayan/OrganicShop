@@ -194,11 +194,12 @@ getProductDetails : async (req,res) => {
      },
      saveAddress : async(req,res) => {
      try {
-          const{fname,lname,phone,house,landMark,street,place,city,pincode,state,country,type,userId} = req.body;
+          console.log(req.body);
+          const{firstName,lastName,mobile,house,landMark,street,place,city,pincode,state,country,type,userId} = req.body;
           const address = new Address({
-              firstName : fname,
-              lastName : lname,
-              mobile : phone,
+              firstName : firstName,
+              lastName : lastName,
+              mobile : mobile,
               house : house,
               landMark : landMark,
               street : street,
