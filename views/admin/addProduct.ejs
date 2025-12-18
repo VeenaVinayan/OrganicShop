@@ -204,7 +204,7 @@
         }
        
         document.getElementById('addVariantForm').reset();
-        if (variants.some(variant => variant.size === size)) {
+        if(variants.some(variant => variant.size === size)) {
             Swal.fire("Varient Size should be Unique!");
             return;
         }
@@ -263,11 +263,9 @@
         console.log("Inside Delete varient !");
         const parent = element.parentElement.parentElement.parentElement.parentElement; // Traversing up
         if (parent && parent.classList.contains('form-group')) {
-            console.log("Inside if condition!!");
             const index = parent.dataset.index; 
             variants.splice(index, 1); // Remove the variant from the array
             parent.remove(); // Remove the row from the DOM
-            console.log("Values  After Delete::"+variants);
             document.getElementById('variant').value= JSON.stringify(variants);
             document.getElementById('variant').value=variants;
         } else {
@@ -279,5 +277,5 @@
   }
 
 </script>
- 
+
 <%- include('Footer') %>

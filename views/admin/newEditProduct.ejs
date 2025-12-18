@@ -107,21 +107,56 @@
                 <input type="number" class="form-control" id="exampleInputRating" name="rating" value="<%= product.rating %>">
                 <div id="errorRating" class="alert-danger" style="display: none;"></div>
          </div>  
-     </div>
-                        <div class="col-md-6 form-section">
-                            <h4 class="card-title">Product Image</h4>
-                            <div class="row">
-                                <% for (let img of product.image) { %>
-                                    <div class="col-md-3">
-                                        <div class="edit-images" style="display: flex; flex-direction: column; justify-content: center;">
-                                            <div>
-                                                <img src="/images/productImages/<%= img %>" style="width: auto; height: 100px; margin-inline: 10px; border: 1px solid rgb(193, 193, 193); border-radius: 15px;" alt="Product Images">
+       </div>
+                <div class="col-md-6 form-section">
+                   <h4 class="card-title">Product Image</h4>
+                   <!-- <div class="row">
+                            <% for (let img of product.image) { %>
+                                <div class="col-md-3">
+                                    <div class="edit-images d-flex flex-column justify-content-center">
+                                        <div>
+                                            <img src="/images/productImages/<%= img %>"
+                                                style="width: auto; height: 100px; margin-inline: 10px; 
+                                                    border: 1px solid rgb(193, 193, 193); border-radius: 15px;"
+                                                alt="Product Image">
+
+                                            <div class="d-flex mt-1">
+                                                <a onclick="deleteImage('<%= img %>','<%= product.id %>')" style="cursor: pointer;">
+                                                    <img width="20" height="20"
+                                                        src="https://img.icons8.com/material/24/filled-trash.png"
+                                                        alt="Trash Icon">
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
-                                <% } %>
+                                </div>
+                            <% } %>
+                        </div> -->
+            <div class="row">
+                <% product.image.forEach((img, index) => { %>
+                    <div class="col-md-3" id="img-box-<%= index %>">
+                        <div class="edit-images d-flex flex-column justify-content-center">
+                            <div>
+                                <img src="/images/productImages/<%= img %>" 
+                                    style="width:auto; height:100px; margin-inline:10px;
+                                    border:1px solid rgb(193,193,193); border-radius:15px;"
+                                    alt="Product Image">
+
+                                <div class="d-flex mt-1">
+                                    <a onclick="deleteImage('<%= img %>', '<%= product.id %>', '<%= index %>')" 
+                                    style="cursor:pointer;">
+                                        <img width="20" height="20"
+                                            src="https://img.icons8.com/material/24/filled-trash.png"
+                                            alt="Trash Icon">
+                                    </a>
+                                </div>
+
                             </div>
-                                <div class="form-group">
+                        </div>
+                    </div>
+                <% }) %>
+             </div>
+             <div class="form-group">
                                     <label for="fileInput">Image</label>
                                     <div class="input-group col-xs-12">
                                         <input id="fileInput" type="file" name="image" multiple class="form-control btn btn-primary" placeholder="Upload Image" >
@@ -165,7 +200,7 @@
                   </div>
                   <div class="form-group">
                       <label for="vsize">Size</label>
-                      <select id="vsize" class="form-control"  required>
+                      <select id="sizev" class="form-control"  required>
                         <option value="50g">50gm</option>
                         <option value="100g">100gm</option>
                         <option value="200g">200gm</option>
@@ -224,6 +259,46 @@
 <script src="/script/cropper.js"> </script>
 
 <script>
+function deleteImage(image, productId, index) {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+
+        if (result.isConfirmed) {
+
+            fetch(`/images?productId=${productId}&image=${image}`, { method: 'DELETE' })
+                .then(res => res.json())
+                .then(data => {
+
+                    if (data.success) {
+                        // Remove from UI immediately
+                        const box = document.getElementById(`img-box-${index}`);
+                        if (box) box.remove();
+
+                        Swal.fire({
+                            title: "Deleted!",
+                            text: "Image has been deleted.",
+                            icon: "success"
+                        });
+                    } else {
+                        Swal.fire("Error!", "Something went wrong.", "error");
+                    }
+
+                })
+                .catch(() => {
+                    Swal.fire("Error!", "Failed to delete image.", "error");
+                });
+        }
+    });
+}
+
+    // varient manipulation
     let variants = [];
     document.addEventListener('DOMContentLoaded', (event) => {
         console.log("Inside the function !!__ Edit Product _");  
@@ -244,7 +319,7 @@
     function addVariant() {
         console.log("Add varient !");
         const price = document.getElementById('vprice').value;
-        const size = document.getElementById('vsize').value;
+        const size = document.getElementById('sizev').value;
         const quantity = document.getElementById('vquantity').value;
         const discount = document.getElementById('vdiscount').value;
         const errorPrice = document.getElementById('errorPrice');
@@ -283,6 +358,7 @@
             size: size,
             discount: discount
         };
+        console.log('New Varient ::',variant);
         variants.push(variant);
         appendVariantToForm(variant);
        // document.getElementById('variantModal').style.display = "none";
@@ -421,6 +497,7 @@ function editVarient(element){
         }
     }
     </script>
+
     <script>
     function validateProductForm() {
         let isValid = true;

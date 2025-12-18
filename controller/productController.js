@@ -154,6 +154,8 @@ try{
     const existingProduct = await Product.findById(productId);
     let  imagesSaved =existingProduct.image;
     let images=[];
+     let img =[];
+    console.log("Images :: "+imagesSaved);
     if(req.files){
             for(let file of req.files){
                 if(
@@ -163,17 +165,14 @@ try{
                     file.mimetype !=='image/gif') {
                         req.flash('error','Check the format of Image')
                         return res.redirect(`/editProduct/${existingProduct._id}`)
-                } 
+                }
+                 img.push(file.filename);
+                 console.log('Ok fine');
             }
-    let img =[];
-    console.log("Images :: "+imagesSaved);
-    if(req.files){ 
-        req.files.forEach(element=>{
-        console.log("error inside !!");
-        img.push(element.filename)
-    });
-  } 
-       
+  console.log('Images ::',img); 
+      if(img.length >0){
+         imagesSaved.push(...img);
+      } 
  if (!variant || !Array.isArray(variant)) {
      return res.status(400).json({ message: 'Invalid product variants' });
   }
@@ -214,6 +213,43 @@ deleteProduct : async(req,res) =>{
         console.log(error);
     }
  },
+  deleteImage: async (req, res) => {
+  try {
+    const { productId, image } = req.query;
+    console.log('Image :',image);
+    if (!productId || !image) {
+      return res.status(400).json({ success: false, message: "Missing productId or image" });
+    }
+     const sanitizeImage = image.trim();
+    const filePath = path.join(__dirname, "../public/images/productImages", image);
+    console.log(filePath);
+    fs.unlink(filePath, async (err) => {
+      if(err) {
+        console.log("File not found or error deleting:", err.message);
+       }
+      const deleteUpdates = await Product.updateOne(
+        { _id: productId },
+        { $pull: { image : sanitizeImage  } }
+      );
+     console.log("Delete Updates :",deleteUpdates);
+      if (deleteUpdates.modifiedCount === 0) {
+        console.log('Image not delete from the Array ');
+        return res.status(400).json({
+          success: false,
+          message: "Image not found in product record",
+        });
+      }
+      return res.status(200).json({
+        success: true,
+        message: "Image deleted successfully",
+      });
+    });
+
+  } catch (err) {
+    console.log("Error in Delete Image !!", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+}
 }
 
 function splitArrayToObjects(array, chunkSize, keys) {

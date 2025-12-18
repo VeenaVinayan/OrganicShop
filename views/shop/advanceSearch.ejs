@@ -7,9 +7,7 @@
 	<h2 class="title-page text-muted">Search Here !</h2>
 </div> 
 </section>
-<!-- ========================= SECTION INTRO END// ========================= -->
 
-<!-- ========================= SECTION CONTENT ========================= -->
 <section class="section-content padding-y">
 <div class="container">
 <div class="row">
@@ -104,7 +102,7 @@
 		<div class="form-inline">
 			<span class="mr-md-auto"> </span>
 		</div>
-</header><!-- sect-heading -->
+</header>
 
 <div class="row">
 	<% product.forEach((row) => { %> 
@@ -112,19 +110,18 @@
 		<figure class="card card-product-grid">
 			<div class="img-wrap"> 
 				<img src="/images/productImages/<%= row.image[0] %>">
-			</div> <!-- img-wrap.// -->
+			</div> 
 			<figcaption class="info-wrap">
 				<div class="fix-height">
-					<a href="./product-detail.html" class="title"><b><%= row.productName %></b></a>
+					<a href="./productDetails/<%= row._id %>" class="title"><b><%= row.productName %></b></a>
 					<div class="price-wrap mt-2">
 						<span class="price"><%= row.varient[0].price %></span>
-						<!-- <del class="price-old">$1980</del> -->
-					</div> <!-- price-wrap.// -->
+					</div> 
 				</div>
 				<a href="/productDetails/<%= row._id %>" class="btn btn-block btn-secondary">Added to cart </a>
 			</figcaption>
 		</figure>
-	</div> <!-- col.// -->
+	</div> 
 	<% }) %>
 	
 	  

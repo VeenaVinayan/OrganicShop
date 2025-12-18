@@ -30,6 +30,7 @@ router.get('/editProduct/:id',isAuth.isAdmin,product.editProductView);
 router.patch('/listProduct',isAuth.isAdmin,product.listProduct);
 router.patch('/unlistProduct',isAuth.isAdmin,product.unlistProduct);
 router.post('/editProductSubmit',isAuth.isAdmin,uploadImage.array('image',4),product.editProduct);
+router.delete('/images',isAuth.isAdmin,product.deleteImage);
 //customer Order
 router.get('/viewCustomerOrder',isAuth.isAdmin,admin.viewCustomerOrders);
 router.get('/viewOrderDetail/:id',isAuth.isAdmin,admin.getOrderDetail);

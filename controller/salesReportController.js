@@ -27,7 +27,7 @@ module.exports ={
                 { $match: { status: 'Delivered' ,
                             deliveredDate: {
                             $gte: new Date('2024-01-01T00:00:00.000Z'),
-                            $lt: new Date('2024-12-31T00:00:00.000Z')
+                            $lt: new Date('2025-12-31T00:00:00.000Z')
                          }
                       }  },
                 {  $group: {
@@ -49,7 +49,7 @@ module.exports ={
                     {$match: {status:'Delivered',
                      deliveredDate: {
                         $gte: new Date('2023-01-01T00:00:00.000Z'),
-                        $lt: new Date('2024-12-31T00:00:00.000Z')
+                        $lt: new Date('2025-12-31T00:00:00.000Z')
                      }}
                    },
                     {$group: {
