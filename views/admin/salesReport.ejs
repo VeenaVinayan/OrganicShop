@@ -237,47 +237,142 @@
          console.log("Date is "+date);
          return date;
     }
-   document.getElementById('btnExcel').addEventListener('click',() => {
-       console.log("INside Download Excel !!! ");
-       const order = formatOrderData();
-       const worksheet = XLSX.utils.json_to_sheet(order);
-       // Create a new workbook
-       const workbook = XLSX.utils.book_new();
-      // Append the worksheet to the workbook
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Order Summary');
+//    document.getElementById('btnExcel').addEventListener('click',() => {
+//        console.log("INside Download Excel !!! ");
+//        const order = formatOrderData();
+//        const worksheet = XLSX.utils.json_to_sheet(order);
+//        // Create a new workbook
+//        const workbook = XLSX.utils.book_new();
+//       // Append the worksheet to the workbook
+//       XLSX.utils.book_append_sheet(workbook, worksheet, 'Order Summary');
 
-// Write the workbook to a binary string
-       const workbookBinary = XLSX.write(workbook, { bookType: 'xlsx', type: 'binary' });
+// // Write the workbook to a binary string
+//        const workbookBinary = XLSX.write(workbook, { bookType: 'xlsx', type: 'binary' });
 
-// Convert the binary string to an array buffer
-     const s2ab = (s) => {
-     const buf = new ArrayBuffer(s.length);
-     const view = new Uint8Array(buf);
-     for (let i = 0; i < s.length; i++) {
-        view[i] = s.charCodeAt(i) & 0xFF;
-     }
-      return buf;
-   };
-// Create a Blob from the array buffer
-   const blob = new Blob([s2ab(workbookBinary)], { type: 'application/octet-stream' });
-// Trigger a download of the Blob
-   saveAs(blob, 'order_summary.xlsx');
- })
+// // Convert the binary string to an array buffer
+//      const s2ab = (s) => {
+//      const buf = new ArrayBuffer(s.length);
+//      const view = new Uint8Array(buf);
+//      for (let i = 0; i < s.length; i++) {
+//         view[i] = s.charCodeAt(i) & 0xFF;
+//      }
+//       return buf;
+//    };
+// // Create a Blob from the array buffer
+//    const blob = new Blob([s2ab(workbookBinary)], { type: 'application/octet-stream' });
+// // Trigger a download of the Blob
+//    saveAs(blob, 'order_summary.xlsx');
+//  })
  
-function formatOrderData(){
+// function formatOrderData(){
+//     const order = JSON.parse(document.getElementById('reportData').value);
+//     const orderData = order.map(item =>({
+//             Order_ID:item._id.toString().substring(5,15),
+//             Name:item.user.name,
+//             Delivery_Date : moment(item.deliveredDate).format('YYYY-MM-DD'),
+//             Amount : item.amount,
+//             Coupon: item.coupon?item.coupon.coupon:'No Coupon',
+//             Coupon_Discount : item.couponDiscount?item.couponDiscount:0,
+//             Payment_Method : item.paymentMode,
+//             Offer : item.totalDiscount,
+//     }))
+//     return orderData; 
+// }
+document.getElementById('btnExcel').addEventListener('click', () => {
+    console.log("Inside Download Excel !!!");
+
+    const { orderData, summary } = formatOrderData(); // includes summary
+
+    const worksheet = XLSX.utils.json_to_sheet([]); // empty sheet
+
+    // 1️⃣ Add header: Report Date & Report Type
+    const reportDate = moment().format("YYYY-MM-DD");
+    const reportType = "Daily Sales Report";
+
+    worksheet['A1'] = { t: 's', v: `Report Date: ${reportDate}` };
+    worksheet['B1'] = { t: 's', v: `Report Type: ${reportType}` };
+
+    // Merge header cells for better look (optional)
+    worksheet['!merges'] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } }, // Merge first 4 columns for Report Date
+        { s: { r: 0, c: 4 }, e: { r: 0, c: 7 } }  // Merge next 4 columns for Report Type
+    ];
+
+    // 2️⃣ Add summary paragraph in row 2
+    const summaryText = 
+`Total Orders: ${summary.totalOrders}
+Total Revenue: ₹${summary.totalAmount}
+Total Discount: ₹${summary.totalOffer}
+Total Coupon Discount: ₹${summary.totalCouponDiscount}`;
+
+    worksheet['A2'] = { t: 's', v: summaryText };
+
+    // Merge summary row across columns
+    worksheet['!merges'].push({ s: { r: 1, c: 0 }, e: { r: 1, c: 7 } });
+
+    // 3️⃣ Add order table starting from row 4
+    XLSX.utils.sheet_add_json(worksheet, orderData, { origin: "A4", skipHeader: false });
+
+    // 4️⃣ Create workbook and append sheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Order Summary');
+
+    // 5️⃣ Write workbook to binary and save
+    const workbookBinary = XLSX.write(workbook, { bookType: 'xlsx', type: 'binary' });
+
+    const s2ab = (s) => {
+        const buf = new ArrayBuffer(s.length);
+        const view = new Uint8Array(buf);
+        for (let i = 0; i < s.length; i++) {
+            view[i] = s.charCodeAt(i) & 0xFF;
+        }
+        return buf;
+    };
+
+    const blob = new Blob([s2ab(workbookBinary)], { type: 'application/octet-stream' });
+    saveAs(blob, 'order_summary.xlsx');
+});
+
+function formatOrderData() {
     const order = JSON.parse(document.getElementById('reportData').value);
-    const orderData = order.map(item =>({
-            Order_ID:item._id.toString().substring(5,15),
-            Name:item.user.name,
-            Delivery_Date : moment(item.deliveredDate).format('YYYY-MM-DD'),
-            Amount : item.amount,
-            Coupon: item.coupon?item.coupon.coupon:'No Coupon',
-            Coupon_Discount : item.couponDiscount?item.couponDiscount:0,
-            Payment_Method : item.paymentMode,
-            Offer : item.totalDiscount,
-    }))
-    return orderData; 
+
+    let totalOrders = order.length;
+    let totalAmount = 0;
+    let totalOffer = 0;
+    let totalCouponDiscount = 0;
+
+    const orderData = order.map(item => {
+        totalAmount += item.amount || 0;
+        totalOffer += item.totalDiscount || 0;
+        totalCouponDiscount += item.couponDiscount || 0;
+
+        return {
+            Order_ID: `ORD-${item._id.toString().substring(5, 15).toUpperCase()}`,
+            Name: item.user.name,
+            Delivery_Date: moment(item.deliveredDate).format('YYYY-MM-DD'),
+            Amount: item.amount,
+            Coupon: item.coupon ? item.coupon.coupon : 'No Coupon',
+            Coupon_Discount: item.couponDiscount || 0,
+            Payment_Method: item.paymentMode,
+            Offer: item.totalDiscount || 0
+        };
+    });
+
+    const summary = {
+        totalOrders,
+        totalAmount,
+        totalOffer,
+        totalCouponDiscount
+    };
+
+    const reportInfo = {
+        date: moment().format('YYYY-MM-DD'),
+        type: 'Daily Sales Report'
+    };
+
+    return { orderData, summary, reportInfo };
 }
+
 
  
 </script>
