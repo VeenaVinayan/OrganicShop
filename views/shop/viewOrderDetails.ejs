@@ -36,7 +36,7 @@
                 <p class="font-weight-bold">Order ID:</p>
               </div>
               <div class="col-md-4">
-                <p><%= order._id %></p>
+                <p><%= `ORD-${order._id.toString().slice(-8).toUpperCase()}` %></p>
               </div>
               <% if(order.status === 'Delivered') { %> 
               <div class="col-md-2">
@@ -284,7 +284,7 @@
         // Order details
         doc.setFontSize(12);
         if (order) {
-            doc.text('Order ID: ' + order._id, 10, yPos);
+            doc.text('Order ID: ' + `ORD-${order._id.toString().slice(-8).toUpperCase()}`, 10, yPos);
             yPos += 10;
 
             doc.text('Date: ' + new Date().toLocaleDateString(), 10, yPos);

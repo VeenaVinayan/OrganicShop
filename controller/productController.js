@@ -134,74 +134,176 @@ module.exports = {
          console.log(err);
        }
 },
-editProduct: async (req,res) => {
-try{  
-    const {productName,productId,description,categoryId,brand,variantArray,rating} = req.body;
-    const {price,size,quantity,discount } = req.body ;
-    if(productName ==='' || description ==="" || categoryId === "" || brand ===""|| variantArray ==="" ||rating ===""){
-      req.flash('error','Validation Error !');
+// editProduct: async (req,res) => {
+// try{  
+//     const {productName,productId,description,categoryId,brand,variantArray,rating} = req.body;
+//     const {price,size,quantity,discount } = req.body ;
+//     if(productName ==='' || description ==="" || categoryId === "" || brand ===""|| variantArray ==="" ||rating ===""){
+//       req.flash('error','Validation Error !');
+//       return res.redirect('/addProducts');
+//     }
+//     const varient = price.map((_,index) =>({
+//           quantity:quantity[index],
+//           price:price[index],
+//           size:size[index] ,
+//           discount:discount[index]
+//        })
+//      );
+//     const {cropImage1,cropImage0} = req.body;
+//     let variant = JSON.parse(variantArray);
+//     const existingProduct = await Product.findById(productId);
+//     let  imagesSaved =existingProduct.image;
+//     let images=[];
+//      let img =[];
+//     console.log("Images :: "+imagesSaved);
+//     if(req.files){
+//             for(let file of req.files){
+//                 if(
+//                     file.mimetype !== 'image/jpg' &&
+//                     file.mimetype !== 'image/jpeg' &&
+//                     file.mimetype !=='image/png'&&
+//                     file.mimetype !=='image/gif') {
+//                         req.flash('error','Check the format of Image')
+//                         return res.redirect(`/editProduct/${existingProduct._id}`)
+//                 }
+//                  img.push(file.filename);
+//                  console.log('Ok fine');
+//             }
+//   console.log('Images ::',img); 
+//       if(img.length >0){
+//          imagesSaved.push(...img);
+//       } 
+//  if (!variant || !Array.isArray(variant)) {
+//      return res.status(400).json({ message: 'Invalid product variants' });
+//   }
+//   if(cropImage0){
+//       images = await cropImageDataExtract(cropImage0,img);
+//       console.log("Inside Crop Image 0 !"+images);
+//   } 
+//   if(cropImage1){
+//       images= await cropImageDataExtract(cropImage1,img);
+//       console.log("Inside Crop Image 1 !"+images);
+//   }
+//      imagesSaved.push(...images);
+//     }
+//         const result = await Product.updateOne({'_id':productId},{
+//             $set:{
+//                 productName:productName,
+//                 description:description,
+//                 category:categoryId,
+//                 brand:brand,
+//                 varient:varient,
+//                 rating:rating,
+//                 image:  imagesSaved,
+//             }
+//         });
+//         res.redirect('/product');
+//     }catch(error){
+//         console.log("Error occured ::"+error);
+//    }
+// },
+editProduct: async (req, res) => {
+  try {
+    const {
+      productName,
+      productId,
+      description,
+      categoryId,
+      brand,
+      variantArray,
+      rating,
+      cropImage0,
+      cropImage1
+    } = req.body;
+
+    const { price, size, quantity, discount } = req.body;
+
+    // Validation
+    if (!productName || !description || !categoryId || !brand || !variantArray || !rating) {
+      req.flash('error', 'Validation Error!');
       return res.redirect('/addProducts');
     }
-    const varient = price.map((_,index) =>({
-          quantity:quantity[index],
-          price:price[index],
-          size:size[index] ,
-          discount:discount[index]
-       })
-     );
-    const {cropImage1,cropImage0} = req.body;
-    let variant = JSON.parse(variantArray);
-    const existingProduct = await Product.findById(productId);
-    let  imagesSaved =existingProduct.image;
-    let images=[];
-     let img =[];
-    console.log("Images :: "+imagesSaved);
-    if(req.files){
-            for(let file of req.files){
-                if(
-                    file.mimetype !== 'image/jpg' &&
-                    file.mimetype !== 'image/jpeg' &&
-                    file.mimetype !=='image/png'&&
-                    file.mimetype !=='image/gif') {
-                        req.flash('error','Check the format of Image')
-                        return res.redirect(`/editProduct/${existingProduct._id}`)
-                }
-                 img.push(file.filename);
-                 console.log('Ok fine');
-            }
-  console.log('Images ::',img); 
-      if(img.length >0){
-         imagesSaved.push(...img);
-      } 
- if (!variant || !Array.isArray(variant)) {
-     return res.status(400).json({ message: 'Invalid product variants' });
-  }
-  if(cropImage0){
-      images = await cropImageDataExtract(cropImage0,img);
-      console.log("Inside Crop Image 0 !"+images);
-  } 
-  if(cropImage1){
-      images= await cropImageDataExtract(cropImage1,img);
-      console.log("Inside Crop Image 1 !"+images);
-  }
-     imagesSaved.push(...images);
+
+    // Build variant objects
+    const varient = price.map((_, index) => ({
+      quantity: quantity[index],
+      price: price[index],
+      size: size[index],
+      discount: discount[index]
+    }));
+
+    // Parse variantArray safely
+    let variant = [];
+    try {
+      variant = JSON.parse(variantArray);
+    } catch (err) {
+      return res.status(400).json({ message: 'Invalid product variants' });
     }
-        const result = await Product.updateOne({'_id':productId},{
-            $set:{
-                productName:productName,
-                description:description,
-                category:categoryId,
-                brand:brand,
-                varient:varient,
-                rating:rating,
-                image:  imagesSaved,
-            }
-        });
-        res.redirect('/product');
-    }catch(error){
-        console.log("Error occured ::"+error);
-   }
+
+    const existingProduct = await Product.findById(productId);
+    if (!existingProduct) {
+      req.flash('error', 'Product not found!');
+      return res.redirect('/product');
+    }
+
+    let imagesSaved = existingProduct.image || [];
+    let uploadedImages = [];
+
+    // Process uploaded files
+    if (req.files && req.files.length > 0) {
+      for (let file of req.files) {
+        if (!['image/jpg', 'image/jpeg', 'image/png', 'image/gif'].includes(file.mimetype)) {
+          req.flash('error', 'Invalid image format!');
+          return res.redirect(`/editProduct/${productId}`);
+        }
+        uploadedImages.push(file.filename);
+      }
+    }
+
+    // Process crop images
+    let croppedImages = [];
+    if (cropImage0) {
+      croppedImages = await cropImageDataExtract(cropImage0, uploadedImages);
+    }
+    if (cropImage1) {
+      // If both cropImage0 and cropImage1 exist, use cropImage1 (overwrite previous)
+      croppedImages = await cropImageDataExtract(cropImage1, uploadedImages);
+    }
+
+    // Update imagesSaved
+    if (croppedImages.length > 0) {
+      // Replace original images with cropped images
+      imagesSaved = croppedImages;
+    } else if (uploadedImages.length > 0) {
+      // If no crop but new images uploaded, append them
+      imagesSaved.push(...uploadedImages);
+    }
+    // Otherwise keep existing images untouched
+
+    // Update product
+    await Product.updateOne(
+      { _id: productId },
+      {
+        $set: {
+          productName,
+          description,
+          category: categoryId,
+          brand,
+          varient,
+          rating,
+          image: imagesSaved
+        }
+      }
+    );
+
+    res.redirect('/product');
+  } catch (error) {
+    console.error('Error occurred ::', error);
+    req.flash('error', 'Something went wrong!');
+    res.redirect('/product');
+  }
 },
+
 deleteProduct : async(req,res) =>{
     try{
         const {id} = req.query;

@@ -176,7 +176,7 @@
                         <hr>
                         <dl class="dlist-align">
                             <dt>Final Total:</dt>
-                            <% const finalAmount = amount + gstAmount; %>
+                            <% const finalAmount = amount ; %>
                             <dd class="text-end text-dark b"><strong id="amountTotal">₹<%= finalAmount.toFixed(2) %></strong></dd>
                             <input type="hidden" id="initialTotalAmount" value="<%= finalAmount.toFixed(2) %>"> 
                         </dl>

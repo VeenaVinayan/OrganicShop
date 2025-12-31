@@ -22,6 +22,7 @@
   <th scope="col" width="120">Quantity</th>
   <th scope="col" width="120">Size</th>
   <th scope="col" width="120">Price</th>
+  <th scope="col" width="120">Discount</th>
   <th scope="col" width="120">Total</th>
   <th scope="col" width="100">Action</th>
 </tr>
@@ -68,6 +69,9 @@
 			 <% if(val.size === row.size ){ %>
                  <%= val.price %> 
 		</figcaption>
+	</td>
+	<td>
+		<%= val.discount %>
 	</td>
 	<td> 
 		<div class="price-wrap" > 
