@@ -42,7 +42,7 @@
                         <td class="text-center">
                           <%= ++index %>
                         </td>
-                        <td><a href="#" class="fw-bold"><%= row._id %></a> </td>
+                        <td><a href="#" class="fw-bold"><%= `ORD-${row._id.toString().slice(-8).toUpperCase()}` %></a> </td>
                        <% let fullName =  (row.address.firstName)?(row.address.firstName+row.address.lastName) :"Rema Vinayan" %>
                         <td><%= fullName %></td>
                         <td>
@@ -63,7 +63,9 @@
                               <span class="badge badge-pill badge-soft-success">Paid</span>
                             <% }else if(row.status === 'Cancelled'){ %> 
                                 <span class="badge badge-pill badge-soft-danger">CANCELLED</span>
-                            <% } else { %>
+                            <% } else if(row.status === 'Return'){ %> 
+                               <span class="badge badge-pill badge-soft-danger">Refunded</span>
+                            <% { else %>
                                 <span class="badge badge-pill badge-soft-warning">Payment Pending</span>
                             <% } %>  
                         </td>
