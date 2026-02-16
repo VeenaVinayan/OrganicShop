@@ -195,7 +195,7 @@ getProductDetails : async (req,res) => {
      saveAddress : async(req,res) => {
      try {
           console.log(req.body);
-          const{firstName,lastName,mobile,house,landMark,street,place,city,pincode,state,country,type,userId} = req.body;
+          const{firstName,lastName,mobile,house,landMark,street,place,city,pincode,state,country,type,userId,next} = req.body;
           const address = new Address({
               firstName : firstName,
               lastName : lastName,
@@ -212,7 +212,13 @@ getProductDetails : async (req,res) => {
               userId : userId, 
           });
           await address.save();
-          res.redirect('/userProfile');
+          if(next === 'profile'){
+               req.flash('success',"Successfully Added Address !");
+               res.redirect('/userProfile');
+          }else if(next === 'placeOrder'){
+               req.flash('success',"Successfully Added Address !");
+               res.redirect('/placeOrder');
+          }
       }catch(err){
            console.log(err);
       } 

@@ -90,24 +90,25 @@
                           <h5 class="mb-0 text-font text-uppercase"> Add New Address</h5>
                         </div>
                         <div class="card-body">
-                          <form action="/saveAddress" method="post">
+                          <form action="/address" method="post">
+                            <input type="hidden" name="next" value="profile" />
                             <div class="row mb-4">
                               <div class="col">
                                 <div data-mdb-input-init class="form-outline">
-                                  <input type="text" id="inpFirstName" class="form-control" name="fname" required />
+                                  <input type="text" id="inpFirstName" class="form-control" name="firstName" required />
                                   <label class="form-label" for="form11Example1">First name</label>
                                 </div>
                               </div>
                               <div class="col">
                                 <div data-mdb-input-init class="form-outline">
-                                  <input type="text" id="inpLastName" name="lname" class="form-control" required />
+                                  <input type="text" id="inpLastName" name="lastName" class="form-control" required />
                                   <label class="form-label" for="form11Example2">Last name</label>
                                   <input type="hidden" value="<%= userData._id %>" name="userId">
                                 </div>
                               </div>
                             </div>
                             <div data-mdb-input-init class="form-outline mb-4">
-                                <input type="number" id="inpPhone" class="form-control"name="phone" required />
+                                <input type="number" id="inpPhone" class="form-control"name="mobile" required />
                                 <label class="form-label" for="form11Example6">Phone</label>
                             </div>
                             
